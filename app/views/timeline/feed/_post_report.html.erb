@@ -1,0 +1,111 @@
+<style>
+
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .cutsomLabel{
+    display: block;
+    font-weight: bold;
+  }
+  
+  
+  .customTextarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+  }
+  
+  .reportButton {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .reportButton:hover {
+    background-color: #0056b3;
+  }
+  
+  #reportForm {
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+</style>
+
+<%
+report_options=@report_options
+%>
+
+
+<div id="reportForm">
+  <p style="font-size:18px;"> * Tell us why do you want to report</p>
+  
+  <div class="row mx-3">
+    <div class="radio-buttons">
+      <% report_options.each do |option| %>
+      <label class="cutsomLabel">
+        <input type="radio" name="reportReason" value=<%=option%>>
+        <span ><%=option.split('_').join(' ').capitalize%></span>
+      </label>
+      <% end %>
+    </div>
+  </div>
+  <p style="color:red;display:none;" id="errorMessage" >Please select a reason</p>
+ 
+  
+  <button onclick="submitForm(event,<%=@postId%>)" class="reportButton">Submit Report</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+ async function submitForm(event,postId) {
+    event.preventDefault(); 
+    
+    const reason = document.querySelector('input[name="reportReason"]:checked')?.value;
+    if(!reason){
+      document.getElementById('errorMessage').setAttribute('style','display:block;color:red;');
+      return;
+    }
+    else{
+        const dataToSend = { report_reason: reason, post_id: postId};
+        try {
+          const response = await fetch('/timeline/add_post_report', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataToSend)
+          });
+      
+          const data=await response.json();
+          if (response.ok) {            
+            Swal.fire({
+              icon: data.status ? 'success':'info',
+              title: 'SparkLine Report',
+              text: data.status ? 'Post Reported Successfully':data.message,
+              showConfirmButton: false,
+              timer: 5000
+            });
+            $('#reoportModal').modal('hide');
+          } else {
+            console.log(data.message);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+    }
+    
+}
+</script>

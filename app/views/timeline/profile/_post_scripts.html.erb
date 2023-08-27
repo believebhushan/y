@@ -1,0 +1,110 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+
+<script>
+    const fetchCommentDetails = (id) => {
+        $.ajax({
+            type: 'GET',
+            url: '/timeline/get_public_post_stats?id=' + id,
+            success: function(data) {
+                $('#post_comments_details').html(data);
+            }
+        });
+    }
+
+
+    function doAnimation(postId, reactionType) {
+        const emoji = document.createElement("div");
+
+        const reactionHtml = {
+            thumbs_up: "\u{1F44D}",
+            thumbs_down: "\u{1F44E}",
+            heart: "\u{2764}\u{FE0F}",
+            star_struck: "\u{1F929}",
+            rocket: "\u{1F680}"
+        }
+        emoji.innerHTML = reactionHtml[reactionType];
+        const emojiContainer = document.getElementById(postId + "animate_modal");
+        emojiContainer.appendChild(emoji);
+        emoji.classList.add("slide_modal");
+        emoji.addEventListener("animationend", () => {
+            emoji.remove();
+        });
+    }
+
+
+    function makeReaction(event, postId, reactionType) {
+        event.stopPropagation();
+        $.ajax({
+            type: 'POST',
+            url: '/timeline/add_reaction',
+            data: {
+                post_id: postId,
+                reaction_type: reactionType
+            },
+            success: function(data) {
+                doAnimation(postId, reactionType);
+                fetchCommentDetails("<%=post.id%>");
+            },
+            error: function() {
+
+            }
+        });
+    }
+   
+
+    $(document).ready(function() {
+        fetchCommentDetails("<%= post.id%>");
+    });
+
+
+    function openotSignedIn(){
+        Swal.fire({
+      title: 'Welcome User',
+      html:  `
+      <div style="text-align: left;">
+      <p style="margin-bottom: 1rem;">Hi, This is only available for the members of planetaprk. Become a menber at planet spark and avail exciting features.</p>
+      <p style="margin-bottom: 1rem;">Get Features like..</p>
+      <div style="display: flex; justify-content: space-between;">
+        <ul style="list-style-type: none; padding-left: 0;">
+          <li style="margin-bottom: 0.5rem;">
+            <span style="display: inline-block; width: 10px; height: 10px; background-color: #f44336; border-radius: 50%; margin-right: 5px;"></span>
+            <span style="vertical-align: middle; font-weight: bold;">🧠 Words Wisdom</span>
+          </li>
+          <li style="margin-bottom: 0.5rem;">
+            <span style="display: inline-block; width: 10px; height: 10px; background-color: #9c27b0; border-radius: 50%; margin-right: 5px;"></span>
+            <span style="vertical-align: middle; font-weight: bold;">✨ Spark Diary</span>
+          </li>
+          <li style="margin-bottom: 0.5rem;">
+            <span style="display: inline-block; width: 10px; height: 10px; background-color: #03a9f4; border-radius: 50%; margin-right: 5px;"></span>
+            <span style="vertical-align: middle; font-weight: bold;">📝 Practice Classes</span>
+          </li>
+        </ul>
+        <ul style="list-style-type: none; padding-left: 0;">
+          <li style="margin-bottom: 0.5rem; display: flex; ">
+            <span style="display: inline-block; width: 10px; height: 10px; background-color: #f44336; border-radius: 50%; margin-right: 5px;"></span>
+            <span style="vertical-align: middle; font-weight: bold; margin-left:10px;">📈 Sparkline</span>
+          </li>
+          <li style="margin-bottom: 0.5rem; display: flex; ">
+            <span style="display: inline-block; width: 10px; height: 10px; background-color: #9c27b0; border-radius: 50%; margin-right: 5px;"></span>
+            <span style="vertical-align: middle; font-weight: bold; margin-left:10px;">🚀 SparkX</span>
+          </li>
+          <li style="margin-bottom: 0.5rem; display: flex; ">
+            <span style="display: inline-block; width: 10px; height: 10px; background-color: #03a9f4; border-radius: 50%; margin-right: 5px;"></span>
+            <span style="vertical-align: middle; font-weight: bold;margin-left:10px;">📆 Daily Quiz</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    
+      `,
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Book a free demo..'
+    })
+      }
+
+
+
+  
+</script>

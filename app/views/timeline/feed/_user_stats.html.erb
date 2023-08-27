@@ -1,0 +1,159 @@
+<%
+  reactionHtmlMapping = {
+    thumbs_up: "\u{1F44D}",
+    thumbs_down: "\u{1F44E}",
+    heart: "\u{2764}\u{FE0F}",
+    star_struck: "\u{1F929}",
+    rocket: "\u{1F680}"
+  }
+%>
+
+<style>
+ 
+  .user_stats{
+    border: 1px solid #cfb01870; 
+    border-radius:15px;
+  }
+  .user_stats span{
+    font-size:12px;
+    text-align:center;
+    color:#232323;
+    font-weight:bold;
+  }
+  .profile_stats{
+    border-radius: 15px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: #FFF;
+    align-items: center;
+  }
+</style>
+
+<div class=" profile_stats p-2 container">
+  <div class="row mx-2">
+    <p  class="font-weight-bold" style="font-size: 16px;">Your Record</p>
+  </div>
+
+  <div class="">
+    <% @stats.each do |type,details| %>
+        <div class=" mt-2 p-1 user_stats">
+          <span class="mx-2"><%=type.to_s.capitalize.singularize%></span>
+          <div class="row mx-auto" id="totals">
+            <span class="col">
+               Total <br> <%=details[:total]%>
+            </span>
+            <span class="col">
+              Comments <br> <%=details[:total_comments]%>
+            </span>
+          </div>
+          
+          <div class="row mx-auto p-3">
+            <% details[:reactions].each do |reaction,count| %>
+              <span class="col">
+                <%=count%> <br> <%=reactionHtmlMapping[reaction.to_sym]%>
+              </span>
+            <% end %>
+          </div>
+         
+        </div>
+        
+    <% end %>
+
+  </div>
+  
+  <div class="row mx-1 mt-2" style="align-items: center;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none">
+     <path fill-rule="evenodd" clip-rule="evenodd" d="M12.0003 22.0465C17.0983 22.0465 21.2311 17.9137 21.2311 12.8157C21.2311 7.71771 17.0983 3.58496 12.0003 3.58496C6.90229 3.58496 2.76953 7.71771 2.76953 12.8157C2.76953 17.9137 6.90229 22.0465 12.0003 22.0465ZM10.1541 9.58496C10.1541 10.3497 9.53425 10.9696 8.76953 10.9696C8.00481 10.9696 7.38492 10.3497 7.38492 9.58496C7.38492 8.82024 8.00481 8.20035 8.76953 8.20035C9.53425 8.20035 10.1541 8.82024 10.1541 9.58496ZM5.53876 17.4311L8.76953 13.2773L11.0772 16.0557L14.308 11.8927L18.4618 17.4311H5.53876Z" fill="#565859"/>
+   </svg>
+    <span class="font-weight-bold">
+    Photo
+   </span>
+  </div>
+
+  <div class="row mx-1 mt-1 p-1" style="align-items: center; border: 1px dashed gray;">
+    <%photos.each_with_index do |photo,index|%>
+        <div class="col-5">
+          <img class="rounded" src="<%=photo.spark_post_content.url%>" style="width: 100%; height: 150px; object-fit:cover;"></img>
+        </div>
+    <% end %>
+    <div class="col-2">
+    <a href="<%='/timeline/profile/'+current_user.uuid.to_s%>">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+         <circle cx="11" cy="11" r="11" fill="#D9D9D9"/>
+        <circle cx="11" cy="11" r="11" fill="#398CCB"/>
+        <path d="M13.38 8.82166L14.1096 12.3778L15.1589 12.1625L14.2232 7.60204C14.134 7.16742 13.7094 6.88738 13.2748 6.97655L8.71435 7.91228L8.92965 8.96156L12.4858 8.23189L7.74275 15.4238L8.63694 16.0136L13.38 8.82166Z" fill="white"/>
+      </svg>
+    </a>
+    </div>
+  </div>
+
+  <div class="row mx-1 mt-2" style="align-items: center;">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M1.8457 6.4336C1.8457 5.93901 2.24664 5.53809 2.74122 5.53809H17.0695V18.0753H2.74122C2.24664 18.0753 1.8457 17.6744 1.8457 17.1798V6.4336ZM4.53226 8.22464H9.00985V10.0157H4.53226V8.22464Z" fill="#565859"/>
+  <path d="M21.3201 16.3424L18.4102 14.6577V8.95464L21.3201 7.2699C21.6186 7.09711 21.9922 7.31248 21.9922 7.65743V15.9549C21.9922 16.2998 21.6186 16.5152 21.3201 16.3424Z" fill="#565859"/>
+  </svg>
+    <span class="font-weight-bold">
+    Video
+   </span>
+
+  </div>
+ <div class="row mx-1 mt-1 p-1" style="align-items: center; border: 1px dashed gray;">
+    <%videos.each_with_index do |video,index|%>
+        <div class="col-5">
+          <video class="rounded" src="<%=video.spark_post_content.url%>" style="width: 100%; height: 150px; object-fit:cover;"></video>
+        </div>
+    <% end %>
+    <div class="col-2">
+    <a href="<%='/timeline/profile/'+current_user.uuid.to_s%>">
+
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+         <circle cx="11" cy="11" r="11" fill="#D9D9D9"/>
+        <circle cx="11" cy="11" r="11" fill="#398CCB"/>
+        <path d="M13.38 8.82166L14.1096 12.3778L15.1589 12.1625L14.2232 7.60204C14.134 7.16742 13.7094 6.88738 13.2748 6.97655L8.71435 7.91228L8.92965 8.96156L12.4858 8.23189L7.74275 15.4238L8.63694 16.0136L13.38 8.82166Z" fill="white"/>
+      </svg>
+    </a>
+    </div>
+  </div>
+
+  <div class="row mx-1 mt-2" style="align-items: center;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+     <path fill-rule="evenodd" clip-rule="evenodd" d="M4.61523 4.08492C4.61523 3.35845 5.16627 2.76953 5.846 2.76953C6.52576 2.76953 7.07677 3.35845 7.07677 4.08492V18.5541H8.30754V4.52338H18.564C19.0171 4.52338 19.3845 4.91599 19.3845 5.4003V19.4311C19.3845 19.9154 19.0171 20.308 18.564 20.308H6.25626C5.34995 20.308 4.61523 19.5228 4.61523 18.5541V4.08492ZM16.9229 12.4157H10.7691V14.1695H16.9229V12.4157ZM10.7691 7.15415H16.9229V10.6618H10.7691V7.15415Z" fill="#565859"/>
+    </svg>
+    <span class="font-weight-bold">
+    Blog
+   </span>
+
+  </div>
+  <div class="row mx-1 mt-1 p-1" style="align-items: center; border: 1px dashed gray;">
+    <%blogs.each_with_index do |blog,index|%>
+        <div class="col-5">
+          <p class="rounded" style="min-height:60px;"> <%=blog.try(:spark_post_content).try(:pseudonym).try(:title)%></p>
+        </div>
+    <% end %>
+    <div class="col-2">
+      <a href="<%='/timeline/profile/'+current_user.uuid.to_s%>">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+         <circle cx="11" cy="11" r="11" fill="#D9D9D9"/>
+        <circle cx="11" cy="11" r="11" fill="#398CCB"/>
+        <path d="M13.38 8.82166L14.1096 12.3778L15.1589 12.1625L14.2232 7.60204C14.134 7.16742 13.7094 6.88738 13.2748 6.97655L8.71435 7.91228L8.92965 8.96156L12.4858 8.23189L7.74275 15.4238L8.63694 16.0136L13.38 8.82166Z" fill="white"/>
+      </svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="row mx-1 mt-2" style="align-items:center;">
+  <div class="col-3"></div>
+   <div class="col mx-4" style="border-radius: 27px; background: #398CCB; box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.08);">
+      <a href="<%='/timeline/profile/'+current_user.uuid.to_s%>" class="text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="14" viewBox="0 0 12 14" fill="none">
+         <path d="M8.85363 3.43047L9.88178 8.44135L11.3603 8.13798L10.0418 1.71193C9.91616 1.09951 9.31781 0.704901 8.70537 0.830556L2.27931 2.14907L2.58269 3.62761L7.59367 2.59944L0.910233 12.7335L2.17024 13.5645L8.85363 3.43047Z" fill="white"/>
+         </svg>
+          See All
+      </a>
+   </div>
+   <div class="col-3"></div>
+  </div>
+
+
+
+</div>
+

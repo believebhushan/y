@@ -1,0 +1,258 @@
+<% 
+post=@post
+is_recording = post.try(:spark_post_content).try(:content_type)=='Recording'
+is_media=post.try(:spark_post_content).try(:content_type)=='Media'
+is_blog=post.try(:spark_post_content).try(:content_type)=='Blog'
+post_title=post.try(:spark_post_content).try(:title)
+
+ %>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .post_description_class {
+            cursor: pointer;
+        }
+        .post_description_class:hover {
+            background-color: #fff;
+        }
+        .reaction_item_modal {
+            font-size: 14px;
+            cursor:pointer;
+        }
+        .reaction_item_modal:hover {
+            animation-name: rotateAnimationModal;
+            animation-duration: 0.2s;
+            animation-timing-function: linear;
+            animation-iteration-count: 2;
+            
+        }
+
+          @keyframes rotateAnimationModal {
+            0% {
+              transform: rotate(0deg);
+            }
+            25% {
+              transform: rotate(-20deg);
+            }
+            50% {
+              transform: rotate(0deg);
+            }
+            75% {
+              transform: rotate(20deg);
+            }
+            100% {
+              transform: rotate(0deg);
+            }
+          }
+        .vplay {
+            width: 100%;
+            float: left;
+            border-radius: 10px;
+        }
+        .vinfo {
+            width: 100%;
+            float: right;
+            border-radius: 10px;
+        }
+        @keyframes slideAnimationModal{
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(300px);
+            }
+          }
+          
+          .slide_modal {
+            animation-name: slideAnimationModal;
+            animation-duration: 1s;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: 1;
+            float-right:
+          }
+        .selected_post {
+            border: 1px solid #5188C7;
+        }
+        .post_style {
+            border-radius: 25px;
+        }
+        .modal-backdrop {
+            opacity: 0.9 !important;
+        }
+        .customCommentBox{
+
+        }
+        .customCommentBox .card{
+            border:none !important;
+            padding: 3px;
+            margin-bottom: 5px;
+            background-color: #b9a6a6;
+            border-radius: 0.25rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+    </style>
+
+    <div class="card  post_style rounded" id="post_<%=post.id.to_s%>" style="font-size:12px;">
+        <div class="card-body" id=<%=Time.now.to_i*1000%> style="background-color: #fff">
+            <div class="row mx-auto">
+                <span class="material-symbols-outlined p-1 mr-1" style="border-radius: 100%; background-color: #fff;">
+            account_circle
+            </span>
+                <span style="color:black;font-weight:bold;" class="mt-2">@<%=post.try(:user).try(:name).split(" ").map{|x| x.downcase}.join("_")%></span>
+            </div>
+            <div class="row mx-auto">
+          
+            <span class="m-1" style="color:#5188C7"># <%=post.spark_post_content.content_type%></span>
+            <% (post.try(:tags) || []).each do |tag| %>
+                <span class="m-1" style="color:#5188C7"># <%=tag%></span>
+            <% end %>
+
+            </div>
+
+            <div class="row mx-auto">
+                <p class="text-left font-weight-bold"><%=post_title%></p>
+            </div>
+
+            <div class="row">
+                <div class="col-md-10">
+                   <%if is_recording%>
+                       <div class="vplay p-2 ">
+                          <div class="embed-responsive embed-responsive-16by9">
+                           <video class="embed-responsive-item p-1 rounded" src=<%=post.try(:spark_post_content).try(:pseudonym).get_url[:link]%> allowfullscreen controls></video>
+                           </div>
+                        </div>
+                       
+                   <%end%>
+
+
+                 <% if is_media %>
+                      <% if ["video/mp4","video/mpeg", "video/quicktime"].include?(post.try(:spark_post_content).try(:file).try(:content_type))%>
+                       <div class="vplay p-2 " >
+                         <div class="embed-responsive embed-responsive-16by9">
+                           <video class="embed-responsive-item p-1 rounded" src=<%=post.try(:spark_post_content).try(:file).try(:url)%> allowfullscreen controls></video>
+                          </div>
+                      </div>
+                   <% else %>
+                      <div style="text-align: center;">
+                        <img style="max-width: 100%; max-height: 300px; width: auto; height: auto;" src=<%= post.try(:user_type)=='admin' ? post.try(:spark_post_content).try(:file).try(:url): post.try(:spark_post_content).try(:url)%>>
+                      </div>
+                   <% end %>
+                 <% end %>
+
+                 <%if is_blog %>
+                      <div style="width:100%; overflow-x:hidden;">
+                              <%= raw post.try(:spark_post_content).try(:pseudonym).try(:content)%>
+                       </div>               
+                 <%end%>
+                    
+                 
+                  
+                   
+                </div>
+                <div class="col-md-2">
+
+                </div>
+
+            </div>
+
+
+            <div class="vinfo" style="font-size: 12px;">
+                <!-- post description starts -->
+                <div class="row mx-auto">
+                </div>
+                <!-- post description ends -->
+            </div>
+
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-4 mt-4">
+                    <div class="row">
+                        <p class="col m-0 p-0 reaction_item_modal" onclick="makeReaction(event,<%= post.id %>, 'thumbs_up')" id="thumbs_up">&#x1f44d;</p>
+                        <p class="col m-0 p-0 reaction_item_modal" onclick="makeReaction(event,<%= post.id %>, 'thumbs_down')">&#x1F44E;</p>
+                        <p class="col m-0 p-0 reaction_item_modal" onclick="makeReaction(event,<%= post.id %>, 'star_struck')">&#x1f929;</p>
+                        <p class="col m-0 p-0 reaction_item_modal" onclick="makeReaction(event,<%= post.id %>, 'heart')">&#x2764;&#xfe0f;</p>
+                        <p class="col m-0 p-0 reaction_item_modal" onclick="makeReaction(event,<%= post.id %>, 'rocket')">&#x1F680;</p>
+                    </div>
+                </div>
+                <div class="col-md-6"></div>
+            </div>
+
+
+
+
+
+        </div>
+
+        <div id=<%=post.id.to_s+ "animate_modal"%> style="height:50px;"></div>
+
+    </div>
+
+    <div class="row mx-1 mt-3 customCommentBox" id="comments_details">
+        
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+
+    <script>
+        const fetchCommentDetails = (id) => {
+            $.ajax({
+                type: 'GET',
+                url: '/timeline/get_post_stats?id=' + id,
+                success: function(data) {
+                    $('#comments_details').html(data);
+                }
+            });
+        }
+
+
+        function doAnimation(postId, reactionType) {
+            const emoji = document.createElement("div");
+
+            const reactionHtml = {
+                thumbs_up: "\u{1F44D}",
+                thumbs_down: "\u{1F44E}",
+                heart: "\u{2764}\u{FE0F}",
+                star_struck: "\u{1F929}",
+                rocket: "\u{1F680}"
+            }
+            emoji.innerHTML = reactionHtml[reactionType];
+            const emojiContainer = document.getElementById(postId + "animate_modal");
+            emojiContainer.appendChild(emoji);
+            emoji.classList.add("slide_modal");
+            emoji.addEventListener("animationend", () => {
+                emoji.remove();
+            });
+        }
+
+
+        function makeReaction(event, postId, reactionType) {
+            event.stopPropagation();
+            $.ajax({
+                type: 'POST',
+                url: '/timeline/add_reaction',
+                data: {
+                    post_id: postId,
+                    reaction_type: reactionType
+                },
+                success: function(data) {
+                    doAnimation(postId, reactionType);
+                    fetchCommentDetails(postId);
+                },
+                error: function() {
+
+                }
+            });
+        }
+       
+
+        $(document).ready(function() {
+            const postId=localStorage.getItem("selectedPostId");
+            fetchCommentDetails(postId);
+        });
+
+      
+    </script>

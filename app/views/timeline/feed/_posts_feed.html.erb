@@ -1,0 +1,477 @@
+
+
+<style>
+.post_description_class {
+  cursor: pointer;
+}
+
+.post_description_class:hover {
+  background-color:#fff;
+}
+.reaction_item_container{
+  border-radius: 18px;
+  background: #DEE7F4;
+}
+.reaction_item {
+  font-size:14px;
+}
+.reaction_item:hover {
+  animation-name: verticalAnimation;
+  animation-duration: 1s; /* Adjust the duration as needed */
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: 2;
+}
+
+@keyframes verticalAnimation {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.vplay{
+    width: 100%;
+    float: left;
+    border-radius: 10px;
+}
+
+.vinfo{
+    width: 100%;
+    float: right;
+    border-radius: 10px;
+}
+
+
+.selected_post{
+  border: 1px solid #5188C7;
+}
+.non_selected_post{
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+}
+.modal-backdrop {
+    opacity:0.9 !important;
+}
+.custom-comment-box{
+}
+.custom-comment-box .card{
+  border:none;
+}
+
+.post-card{
+  border-radius: 15px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: #FFF;
+}
+
+@keyframes slideAnimation {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-300px);
+  }
+}
+
+.slide {
+  animation-name: slideAnimation;
+  animation-duration: 1s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: 1;
+  float-right:
+}
+
+.post-tag{
+color: #398CCB;
+font-size: 16px;
+font-style: normal;
+font-weight: 500;
+}
+
+.embed-responsive {
+    position: relative;
+}
+
+.play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    display: none;
+}
+
+.embed-responsive:hover .play-button {
+    display: block;
+}
+
+
+
+</style>
+
+<!-- Post Content Modal -->
+
+
+<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" data-mdb-backdrop="true" data-mdb-keyboard="true" data-backdrop="static" data-keyboard="false" style="position: fixed; top: 0; bottom: 0; left: 0; right: 0;">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content" style="height:100vh;">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="float:left; margin:0; padding:0;">
+          <span class="material-symbols-outlined" aria-hidden="true">
+          keyboard_backspace
+          </span>
+        </button>
+      </div>
+      <div class="modal-body" id="post_modal_content" style="overflow-y: scroll; height: calc(100vh - 56px);">
+      
+      
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Report Modal -->
+
+<div id="reoportModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myReportLargeModal" aria-hidden="true" data-mdb-backdrop="true" data-mdb-keyboard="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered  modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="float:left; margin:0; padding:0;">
+          <span class="material-symbols-outlined" aria-hidden="true">
+          keyboard_backspace
+          </span>
+        </button>
+      </div>
+      <div class="modal-body" id="postReportModalContent">
+      
+      
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<% @posts.each do |post| %>
+  <%
+  post_content = post.try(:spark_post_content)
+  is_recording = post.content_type=='Recording'
+  is_media= post.content_type=='Media'
+  is_blog= post.content_type=='Blog'
+  post_title= post.try(:title)
+  is_sparks_choice = post.try(:user_type)=='admin'
+  is_content_present = true
+  user = post.try(:user)
+  post_user_class = 'Student'
+
+  %>
+    <% if is_content_present%>
+    <div class="card mt-2  post-card" onclick="handlePost(this)" id="post_<%=post.id.to_s%>">
+       <div class="card-body">     
+       <div class="row">
+         <div class="col-9">
+           <div class="row mx-auto">
+            <img src="https://www.w3schools.com/howto/img_avatar.png" style="object-fit: cover; border-radius: 50%; width: 30px; height: 30px;">
+            <span style="color:black;font-weight:bold;" class="mx-2">
+              <a href="<%= '/timeline/profile/' + user.user_name %>" onclick="stopParentClick(event)" style="font-weight: bold; color: black; font-size:14px;"> @<%= post.try(:user).try(:name) %> </a> <%=is_sparks_choice ? '(SparksChoice)' : ''%>
+              <br>
+              <% if post_user_class == "Student" %>
+               <p class="text-center m-0" style="color: #fff; background: #398CCB; font-size: 12px; width: 100px; border-radius: 20px;"><%= post_user_class %></p>
+               <% end %>
+
+               <% if post_user_class == "Teacher" %>
+                <p class="text-center m-0" style="color: #fff; background: #398CCB; font-size: 12px; width: 100px; border-radius: 20px;"><%= post_user_class %></p>
+                <% end %>
+
+                <% if is_sparks_choice %>
+                 <p class="text-center m-0" style="color: #fff; background: #FCAF26; font-size: 12px; width: 100px; border-radius: 20px;"> Admin</p>
+                <% end %>
+                
+            </span>
+           </div>
+         </div>
+         <div class="col-3 ">
+           <div class="row">
+            <div class="col">
+              <div class="dropdown dropleft">
+                    <span  class="material-symbols-outlined" type="button" id="dropdownMenuButton<%=post.id%>" aria-haspopup="true" aria-expanded="false" onclick="openDropdown(event,<%=post.id%>)">
+                        more_horiz
+                    </span>
+                <div class="dropdown-menu" id="dropdownMenu<%= post.id %>" aria-labelledby="dropdownMenuButton<%=post.id%>">
+                <span class="dropdown-item" onclick="handlePostOptions(event,<%=post.id%>)">Report</span>
+                </div>
+           </div>
+            <span style="font-weight: normal; font-size: 12px;" class="mt-3">
+            Posted <%=time_ago_in_words(post.created_at)%> ago
+            </span>         
+         </div>
+     </div>
+         </div>
+       </div>
+        <div class="row">
+            <div class="col-md-7 m-0 p-0">
+                <%if is_recording%>
+                        <div class="vplay">
+                              <video class="embed-responsive-item" style="width: 100%; border-radius: 15px; border: 1px solid rgba(0, 0, 0, 0.20);" id="video_content_<%=post.id.to_s%>" onmouseover="this.play();" onmouseout="this.pause();" src=<%=post.url%> allowfullscreen loop ></video>
+                        </div>
+                <%end%>
+                <%if is_blog%>  
+                <div style="width:100%; height:200px; overflow-y:scroll; overflow-x:hidden;"><%= raw post.raw_content%></div>
+                <button class="btn btn-secondary mt-2 p-0" style="width:200px;">View the Blog</button>
+                <%end%>
+
+                <% if is_media %>
+                <div style="text-align: center;">
+                  <img style="max-width: 100%; max-height: 300px; width: auto; height: auto;" src="<%=post.url%>">
+                </div>
+                <% end %>
+
+
+                
+            </div>
+            <div class="col-md-5 post_description_class" id=<%=post.id%> >
+                <div class="vinfo" style="font-size: 12px;">
+                   <div class="row mx-auto mt-2">
+                     <p class="text-left font-weight-bold"><%=post_title%> </p>
+                   </div>
+                    <div class="row mx-auto">
+                      <%if is_sparks_choice%>
+                         <span class="m-1"  style="color:#5188C7; background:yellow;">#SparksChoice</span>
+                       <% end %>
+                       <% (post.try(:tags) || []).each do |tag| %>
+                        <span class="m-1 post-tag"># <%=tag%></span>
+                        <% end %>
+                     </div>
+
+                     <!-- post header starts -->
+
+                    <!-- post header ends -->
+
+                      <!-- post description starts -->
+                      <div class="row mx-auto">
+                    </div>
+                    <!-- post description ends -->
+
+                    <div class="card-footer" style="background-color:#fff;">
+                    
+                        <div class="row" id="reactions_row">
+                            <p class="col m-0 p-0 reaction_item" onclick="addReaction(event,<%= post.id %>, 'thumbs_up')" id="thumbs_up" >&#x1f44d;</p>
+                            <p class="col m-0 p-0 reaction_item" onclick="addReaction(event,<%= post.id %>, 'thumbs_down')" >&#x1F44E;</p>
+                            <p class="col m-0 p-0 reaction_item" onclick="addReaction(event,<%= post.id %>, 'star_struck')">&#x1f929;</p>
+                            <p class="col m-0 p-0 reaction_item" onclick="addReaction(event,<%= post.id %>, 'heart')">&#x2764;&#xfe0f;</p>
+                            <p class="col m-0 p-0 reaction_item" onclick="addReaction(event,<%= post.id %>, 'rocket')">&#x1F680;</p>
+                        </div>
+
+                        <div class="row justify-content-end">
+                           <p class="text-primary  p-2" onclick="fetchDetails(event,<%= post.id %>)" id="view_comments_button" style="font-weight:bold;  text-decoration: underline;">View Comments</p>
+                        </div>
+                        <div id=<%=post.id.to_s+"animate"%> style="height:50px;"></div>
+                    </div>
+                </div>
+            </div>
+          
+        </div>
+        <div class="row">
+         <div class="col custom-comment-box" id="post_details_<%=post.id%>">
+          <!-- post details here -->
+         </div>
+        </div>
+
+       
+       </div>
+     
+   </div>
+   <% end %>
+
+
+<% end %>
+<div class="row" style="margin-bottom: 50px;">
+  <div class="col">
+    <%= paginate @posts %>
+  </div>
+</div>
+
+
+
+<% if @posts.count == 0 %>
+  <div class="row p-2" style="background:#f4f4f4;">
+   <p style="font-size:18px;" class="m-auto">    No Posts Found for the chosen filters. Try changing the filters.   </p>
+    <img src="https://w7.pngwing.com/pngs/658/622/png-transparent-page-not-found-illustration-thumbnail.png" style='width:100%; height:100%;'>
+
+  </div>
+<% end %>
+
+<div class="row m-1 p-2">
+  
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+
+<script>
+
+const apiHeaders = {
+  "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+ }
+
+function openDropdown(event,postId) {
+    event.stopPropagation();
+    var dropdownButton = document.getElementById(`dropdownMenuButton${postId}`);
+    var dropdownMenu = document.getElementById(`dropdownMenu${postId}`);
+
+    var isExpanded = dropdownButton.getAttribute("aria-expanded") === "true";
+
+    if (isExpanded) {
+      dropdownButton.setAttribute("aria-expanded", "false");
+      dropdownMenu.classList.remove("show");
+    } else {
+      dropdownButton.setAttribute("aria-expanded", "true");
+      dropdownMenu.classList.add("show");
+    }
+}
+const fetchPostDetails=(id)=>{
+    const feedLoading = '<%= j render "feed_loading" %>';
+    $(`#post_details_${id}`).html(feedLoading);
+    $.ajax({
+        type: 'GET',
+        url: '/timeline/get_post_stats?id='+id,
+        headers:apiHeaders,
+        success: function(data) {
+          $(`#post_details_${id}`).html(data);
+        }
+      });
+}
+
+const fetchUserPostStats=(id)=>{
+    const feedLoading = '<%= j render "feed_loading" %>';
+    $('#posts_details').html(feedLoading);
+    $.ajax({
+        type: 'GET',
+        url: '/timeline/get_user_posts_stats',
+        headers:apiHeaders,
+        success: function(data) {
+          $('#post_details').html(data);
+        }
+      });
+}
+
+const fetchDetails=(event,postId)=>{
+  event.stopPropagation();
+  fetchPostDetails(postId);
+}
+
+function doAnimation(postId, reactionType) {
+  const emoji = document.createElement("div");
+  
+  const reactionHtml =   {
+  thumbs_up: "\u{1F44D}",
+  thumbs_down: "\u{1F44E}",
+  heart: "\u{2764}\u{FE0F}",
+  star_struck: "\u{1F929}",
+  rocket: "\u{1F680}"
+  }
+  emoji.innerHTML = reactionHtml[reactionType];
+  const emojiContainer = document.getElementById(postId+"animate");
+  emojiContainer.appendChild(emoji);
+  emoji.classList.add("slide");
+  emoji.addEventListener("animationend", () => {
+    emoji.remove();
+  });
+}
+
+
+function addReaction(event,postId, reactionType) {
+    event.stopPropagation();
+    $.ajax({
+        type: 'POST',
+        url: '/timeline/add_reaction',
+        headers:apiHeaders,
+        data: { post_id: postId, reaction_type: reactionType },
+        success: function(data) {
+            doAnimation(postId, reactionType);
+            fetchPostDetails(postId);
+        },
+        error: function() {
+
+        }
+    });
+}
+
+function handleVideoPlaying(postId){
+   const videoPlayer = document.getElementById("video_content_"+postId);
+   console.log(videoPlayer,postId,"sbhhjvjjb");
+   if(videoPlayer){
+      if (videoPlayer.paused) {
+  
+     } else {
+      videoPlayer.pause();
+    }
+   }
+  
+
+}
+
+
+const handlePost = (element) => {
+  const postId = element.id.split('_')[1];
+  handleVideoPlaying(postId);
+  localStorage.setItem("selectedPostId",postId);
+
+  $('#myModal').modal('show');
+  const feedLoading = '<%= j render "feed_loading" %>';
+  $('#post_modal_content').html(feedLoading);
+  $.ajax({
+      type: 'GET',
+      url: '/timeline/get_post?post_id='+postId,
+      headers:apiHeaders,
+      success: function(data) {
+        $('#post_modal_content').html(data);
+      }
+    });
+}
+
+const handlePostOptions = (event,postId) => {
+  event.stopPropagation();
+  $('#reoportModal').modal('show');
+  $.ajax({
+    type: 'GET',
+    url: '/timeline/get_post_report_form?post_id='+postId,
+    headers:apiHeaders,
+    success: function(data) {
+      $('#postReportModalContent').html(data);
+    }
+  });
+}
+
+
+$( document ).ready(function() {
+});
+
+$(document).on('click', '.pagination a', function(e) {
+    e.preventDefault();
+    var queryParams = $(this).attr('href').split('page=')[1];
+    let page = 1;
+    if(queryParams){
+        page = queryParams?.split('&')[0];
+    }
+    console.log(queryParams,"queryParams");
+   
+    const currentTabParams ={
+      ...JSON.parse(localStorage.getItem("tabs")) || {},
+      page: parseInt(page)
+    }
+    localStorage.setItem("currentTabParams",JSON.stringify(currentTabParams));
+    fetchData();
+    console.log("page",currentTabParams);
+});
+
+function stopParentClick(event) {
+  event.stopPropagation();
+}
+
+</script>

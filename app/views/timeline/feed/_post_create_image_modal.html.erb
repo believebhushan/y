@@ -1,0 +1,332 @@
+<style>
+.file-drop-zone {
+  background-color: #f5f5f5;
+  border: 2px dashed #ccc;
+  padding: 1em;
+  text-align: center;
+  position: relative;
+}
+
+.file-drop-zone i {
+  font-size: 2em;
+  color: #ccc;
+}
+
+.file-drop-zone-text {
+  display: block;
+  margin-top: 1em;
+  color: #aaa;
+}
+
+.custom-file-input {
+  visibility: hidden;
+  position: absolute;
+}
+
+#selected-image {
+  max-width: 100%;
+  margin-top: 1em;
+}
+</style>
+
+<div class="container">
+  <div class="row m-2">
+    <div class="col-md-3"></div>
+    <div class="col-md-6 text-center d-flex align-items-center alert alert-info"  style="justify-content:center;cursor:pointer;" onclick="startTourCreateImagePost()" >
+       <span class="material-symbols-outlined"  id="start_tour_create_image_post">help</span>
+       <span class="ml-2" style="text-decoration: underline;">How to create a Post ??</span>
+    </div>
+    <div class="col-md-3"></div>
+  </div>
+
+
+
+  <p>Select Your Photo</p>
+
+
+
+  <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10 col-sm-12" >
+      <div class="file-drop-zone" id="image_upload_here" onclick="clickFileInput()">
+      <i class="material-symbols-outlined">cloud_upload</i>
+      <span class="file-drop-zone-text">Drop or select file here to upload</span>
+        <label for="image-upload" class="custom-file-input">Choose Image</label>
+        <input type="file" id="image-upload" onchange="handleImageChange(event)" class="file-input" style="display:none;" accept="image/*,.gif">
+      </div>
+
+
+      <div class="form-group mt-4">
+      <label for="exampleFormControlTextarea1"> <strong><%=current_user.name%></strong>  What is the post about !! </label>
+      <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+      </div>
+
+      <img id="selected-image">
+      
+      <button type="button" class="btn btn-primary btn-sm mt-2"  id="postCreateSubmit" onclick="handleCreatePost()" >Create Post</button>
+
+
+
+    </div>
+    <div class="col-md-1"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script
+  src="https://unpkg.com/@tensorflow/tfjs@2.6.0"
+  type="text/javascript"
+></script>
+<script src="https://unpkg.com/nsfwjs@2.3.0" type="text/javascript"></script>
+
+<script>
+
+const createImagePostHeaders = {
+  "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+}
+
+function clickFileInput() {
+  document.getElementById('image-upload').click();
+}
+
+const suggestUser=()=>{
+    const textarea = document.getElementById('exampleFormControlTextarea1');
+    const text="Hello Guys this is my first post !!..."
+    let i=0;
+
+    var interval = setInterval(function() {
+        if (i <= text.length) {
+          textarea.value = text.slice(0, i);
+          i++;
+        } else {
+          clearInterval(interval);
+          setTimeout(function() {
+            var j = text.length;
+            var interval2 = setInterval(function() {
+              if (j >= 0) {
+                textarea.value = text.slice(0, j);
+                j--;
+              } else {
+                clearInterval(interval2);
+              }
+            }, 100);
+          }, 2000);
+        }
+      }, 100);
+}
+
+const reportContentViolation = async (report) => {
+  const contentInput = document.getElementById('image-upload');
+
+  const reportData = new FormData();
+
+  const newReport = report.map((ele) => {
+    return { type: ele.className, probability: ele.probability };
+  });
+  
+  reportData.append('user_id', '<%=current_user.id%>');
+  reportData.append('post_image', contentInput.files[0]);
+  reportData.append('report', JSON.stringify(newReport));
+
+  try {
+    const response = await fetch('/timeline/create_post_violation_report', {
+      method: 'POST',
+      headers:createImagePostHeaders,
+      body: reportData,
+    });
+
+
+    if (response.ok) {
+      const res = await response.json();
+      if(res?.status){
+        Swal.fire({
+          icon: 'warning',
+          title: 'Content Violation',
+          text: 'You have attempted to upload content which violates our content policy. \n Your action has been recorded.',
+          showConfirmButton: false,
+          timer: 8000
+        });
+        $('#postCreateModal').modal('hide');
+
+      }
+     
+    } else {
+      const errorData = await response.json();
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+
+let model; 
+
+async function handleImageChange(event) {
+
+  const selectedImage = document.getElementById('selected-image');
+  const file = event.target.files[0];
+
+  if (file) {
+    const reader = new FileReader();
+
+    reader.onload = async function() {
+      selectedImage.onload = async function() {
+        const postDescription = document.getElementById('exampleFormControlTextarea1');
+        postDescription.focus();
+        postDescription.scrollIntoView({ behavior: 'smooth' });
+
+        const button = document.getElementById('postCreateSubmit');
+        button.disabled = true;
+        button.innerHTML = "Analysing Your Image"
+
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.src = selectedImage.src;
+
+        if (!model) {
+          try {
+            model = await nsfwjs.load(); 
+          } catch (error) {
+            console.error('Error loading the NSFW model', error);
+            button.innerHTML = "Create Post"
+            return;
+          }
+        }
+
+        model.classify(img).then(async (predictions) => {
+          const violation = predictions.find(
+            (ele) => ele.className !== 'Neutral' && ele.className !== 'Drawing' && ele.probability > 0.5
+          );
+          if (violation) {
+            await reportContentViolation(predictions);
+          } else {
+            button.disabled = false;
+            button.innerHTML = "Create Post"
+          }
+        });
+      };
+
+      selectedImage.src = reader.result;
+      selectedImage.style.display = 'block';
+    };
+
+    reader.readAsDataURL(file);
+  }
+}
+
+
+
+
+
+
+const handleCreatePost = async () => {
+  const button=document.getElementById('postCreateSubmit');
+  button.disabled=true;
+   button.innerHTML= "Creating Your Post .....";
+  const imageInput = document.getElementById('image-upload');
+  const postDescription = document.getElementById('exampleFormControlTextarea1').value;
+
+  if(!imageInput.files[0] || postDescription===''){
+    alert("Please slect the photo and write down the description.");
+    button.disabled=false;
+    button.innerHTML= "Create Post";
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('user_id', '<%=current_user.id%>');
+  formData.append('post_image', imageInput.files[0]);
+  formData.append('post_description', postDescription);
+
+  try {
+    const response = await fetch('/timeline/create_image_post', {
+      method: 'POST',
+      body: formData,
+      headers:createImagePostHeaders,
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      if(data.status){
+        Swal.fire({
+          icon: 'success',
+          title: 'SparkLine Post',
+          text: 'Post Created',
+          showConfirmButton: false,
+          timer: 2500, 
+          didClose: () => {
+            location.reload(); 
+          }
+        });
+      }
+      else{
+        Swal.fire({
+          icon: 'info',
+          title: 'SparkLine Post',
+          text: data?.message,
+          showConfirmButton: false,
+          timer: 8000,
+        });
+      }
+     
+      button.innerHTML= "Create Post";
+      button.disabled=false;
+      $('#postCreateModal').modal('hide');
+    } else {
+      console.log(data.message);
+    }
+  } catch (error) {
+    button.innerHTML= "Create Post";
+    button.disabled=false;
+    console.log(error);
+  }
+};
+
+const startTourCreateImagePost=()=>{
+
+    introJs().setOptions({
+    showProgress:true,
+    steps: [{
+      intro: "Hi, Let me show you how to create a post thorugh an image"
+    }, {
+      element: document.querySelector('#image_upload_here'),
+      intro: "Click here to choose the image",
+      position:"bottom"
+    },
+    {
+        element:document.querySelector('#exampleFormControlTextarea1'),
+        intro:"Wow, if you have selected the image, write something about it here.",
+        position:"bottom"
+    },
+    {
+        element:document.querySelector('#postCreateSubmit'),
+        intro:"Once you have selected the post and written down about it. Click on this button to create the post.",
+        position:"bottom"
+    },
+    {
+      element:document.querySelector('#start_tour_create_image_post'),
+      intro:"To Review the steps click here.",
+      position:"bottom"
+    }
+   
+    ]
+    }).start();
+
+}
+
+$( document ).ready(function() {
+    setTimeout(()=>{
+       const shownTour = localStorage.getItem("sparkline_image_post_tour");
+        if(shownTour!=="yes"){
+            startTourCreateImagePost();
+        }
+        localStorage.setItem("sparkline_image_post_tour","yes");
+    },1000)
+});
+
+
+
+
+</script>

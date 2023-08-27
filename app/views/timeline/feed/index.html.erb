@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+        integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>SparkLine</title>
+    <link href="https://vjs.zencdn.net/8.3.0/video-js.css" rel="stylesheet" />
+
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+    <script src='https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://vjs.zencdn.net/8.3.0/video.min.js"></script>
+
+    <!--  Tour -->
+    <link rel="stylesheet" href="https://unpkg.com/intro.js/introjs.css">
+    <script src="https://unpkg.com/intro.js/intro.js"></script>
+
+
+</head>
+
+<body>
+
+    <style>
+        * {
+            padding: 0px;
+            margin: 0px;
+        }
+
+        .list-group {
+            border: none;
+            background: none;
+        }
+
+        .list-group-item {
+            border: none;
+            display:flex;
+            align-items:center;
+        }
+        .list-group-item i {
+            margin-right: 5px;
+        }
+
+        input:focus {
+            outline: none;
+        }
+
+        .search_text {
+            color: white
+        }
+
+        .search_text:focus {
+            outline: none;
+        }
+
+        .sidebar_tab_item {
+            border-radius: 16px;
+        }
+        .sidebar_tab_item:hover{
+            border: 1px solid #ccc !important ;
+        }
+
+        .header_tab_item {}
+
+        .tab_active {
+            background-color: black;
+        }
+
+        .custom_badge {
+            cursor: pointer;
+            border-radius: 27px;
+            border: 0.5px solid rgba(0, 0, 0, 0.15);
+            background: #FFF;
+            box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.08);
+            color: #252627;
+            font-weight: bold;
+            margin-top:10px;
+        }
+
+        .custom-sidebar {
+            border-radius: 0px 15px 15px 0px;
+            border-right: 1px solid rgba(0, 0, 0, 0.20);
+            background: #FFF;
+            box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.06);
+        }
+
+        .popover {
+            max-height: 500px;
+            overflow-y:auto;
+        }
+
+        @media (max-width: 576px) {
+            .popover {
+                max-width: 100%;
+                width: 95%;
+            }
+        }
+        .user-description{
+          border-radius: 15px;  
+         border: 0.5px solid rgba(0, 0, 0, 0.20);
+         background: #F5F7FA;  
+
+        }
+        .notification_button_container{
+            border-radius: 27px;
+            border: 0.5px solid rgba(0, 0, 0, 0.15);
+            background: #FFF;
+            box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.08);
+        }
+        .post_creation_container{
+            border-radius: 27px;
+            border: 0.5px solid rgba(0, 0, 0, 0.15);
+            background: #FFF;
+            box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+
+    <div class="container-fluid" style="background:#F5F7FA">
+
+    <div class="row ">
+        <div class="col-md-2">
+            <!-- sidebar starts -->
+            <div class=" d-lg-block d-none col-12 sticky-top custom-sidebar "
+                style="background-color: #fff;height:100vh;">
+                <img src="https://plant.b-cdn.net/logo.png" style='object-fit:fill; width:100%; height:40px;'>
+                <div class="row mt-1 mx-auto" style="font-size:16px;cursor:pointer; font-weight:400;" onclick="goToLms()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26" fill="none">
+                 <path fill-rule="evenodd" clip-rule="evenodd" d="M13.0003 23.8337C18.9834 23.8337 23.8337 18.9834 23.8337 13.0003C23.8337 7.01724 18.9834 2.16699 13.0003 2.16699C7.01724 2.16699 2.16699 7.01724 2.16699 13.0003C2.16699 18.9834 7.01724 23.8337 13.0003 23.8337ZM15.5613 9.11549L14.0292 7.58344L8.66699 12.9457L14.0294 18.3081L15.5614 16.776L11.7311 12.9457L15.5613 9.11549Z" fill="#324558"/>
+                 <path fill-rule="evenodd" clip-rule="evenodd" d="M13.0003 23.8337C18.9834 23.8337 23.8337 18.9834 23.8337 13.0003C23.8337 7.01724 18.9834 2.16699 13.0003 2.16699C7.01724 2.16699 2.16699 7.01724 2.16699 13.0003C2.16699 18.9834 7.01724 23.8337 13.0003 23.8337ZM15.5613 9.11549L14.0292 7.58344L8.66699 12.9457L14.0294 18.3081L15.5614 16.776L11.7311 12.9457L15.5613 9.11549Z" fill="#090909"/>
+                </svg>
+                <span class="mx-2">Back</span>
+                </div>
+                <hr>
+                
+                <div class="row user-description d-flex justify-content-center align-items-center" style="margin-left: 5px; margin-right: 5px;">
+                 <img src="https://www.w3schools.com/howto/img_avatar.png" style="border:1px solid white; border-radius: 50%; width: 100px; height: 100px; margin-top: 5px;">
+                 <p style="text-align:center; font-size: 20px; font-family: Helvetica Neue;" class="font-weight-bold">
+                    <%=current_user.name %>
+                    <br>
+                    <br>
+                    <a href="<%='/timeline/profile/'+current_user.user_name%>" style="color: blue; font-size: 14px;">Go to Your Profile</a>
+                 </p>
+                </div>
+
+
+                        <ul class="list-group mt-5">
+                        <li class="list-group-item sidebar_tab_item" style="cursor:pointer" id="home" onclick="handleTabClick('home')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26" fill="none">
+                                <path d="M11.9881 3.42313C12.5563 2.85895 13.4436 2.85896 14.0119 3.42313L24 13.34L22.6508 14.847L20.3753 12.5877V21.9644C20.3753 22.5364 19.935 23 19.3919 23H14.9667V19.8933C14.9667 18.7494 14.0862 17.8221 13 17.8221C11.9138 17.8221 11.0332 18.7494 11.0332 19.8933V23H6.60807C6.06496 23 5.62469 22.5364 5.62469 21.9644V12.5877L3.34918 14.847L2 13.34L11.9881 3.42313Z" fill="#565859"/>
+                            </svg>                            
+                            <span class="ml-2">All</span>
+                        </li>
+                      
+                        <li class="list-group-item sidebar_tab_item" style="cursor:pointer" id="video" onclick="handleTabClick('video')">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26" fill="none">
+                             <path fill-rule="evenodd" clip-rule="evenodd" d="M2 6.97015C2 6.43433 2.43435 6 2.97015 6H18.4925V19.582H2.97015C2.43435 19.582 2 19.1477 2 18.6119V6.97015ZM4.91044 8.91044H9.76116V10.8507H4.91044V8.91044Z" fill="#565859"/>
+                             <path d="M23.0978 17.7051L19.9453 15.8799V9.70167L23.0978 7.87654C23.4211 7.68935 23.8259 7.92267 23.8259 8.29637V17.2853C23.8259 17.6589 23.4211 17.8923 23.0978 17.7051Z" fill="#565859"/>
+                             </svg>
+                             <span class="ml-2">Video</span>
+                        </li>
+                      
+                        <li class="list-group-item sidebar_tab_item" style="cursor:pointer" id="blog" onclick="handleTabClick('blog')">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26" fill="none">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M5 4.425C5 3.638 5.59696 3 6.33333 3C7.06973 3 7.66667 3.638 7.66667 4.425V20.1H9V4.9H20.1111C20.602 4.9 21 5.32533 21 5.85V21.05C21 21.5747 20.602 22 20.1111 22H6.77778C5.79594 22 5 21.1493 5 20.1V4.425ZM18.3333 13.45H11.6667V15.35H18.3333V13.45ZM11.6667 7.75H18.3333V11.55H11.6667V7.75Z" fill="#565859"/>
+                         </svg>                          
+                          <span class="ml-2">Blog</span>
+                        </li>
+                      
+                        <li class="list-group-item sidebar_tab_item" style="cursor:pointer" id="image" onclick="handleTabClick('image')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26" fill="none">
+                             <path fill-rule="evenodd" clip-rule="evenodd" d="M13 23C18.5229 23 23 18.5229 23 13C23 7.47715 18.5229 3 13 3C7.47715 3 3 7.47715 3 13C3 18.5229 7.47715 23 13 23ZM11 9.5C11 10.3285 10.3285 11 9.5 11C8.67155 11 8 10.3285 8 9.5C8 8.67155 8.67155 8 9.5 8C10.3285 8 11 8.67155 11 9.5ZM6 18L9.5 13.5L12 16.51L15.5 12L20 18H6Z" fill="#565859"/>
+                            </svg>
+                             <span class="ml-2">Photo</span>
+                        </li>
+
+                        <li class="list-group-item sidebar_tab_item" style="cursor:pointer"  onclick="startTour()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26" fill="none">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.0003 23.8337C18.9834 23.8337 23.8337 18.9834 23.8337 13.0003C23.8337 7.01724 18.9834 2.16699 13.0003 2.16699C7.01724 2.16699 2.16699 7.01724 2.16699 13.0003C2.16699 18.9834 7.01724 23.8337 13.0003 23.8337ZM14.6253 8.12533C14.6253 8.72365 14.1403 9.20866 13.542 9.20866C12.9437 9.20866 12.4587 8.72365 12.4587 8.12533C12.4587 7.527 12.9437 7.04199 13.542 7.04199C14.1403 7.04199 14.6253 7.527 14.6253 8.12533ZM15.2689 18.8605C14.6796 19.0998 14.1435 19.2704 13.6627 19.379C13.1818 19.4854 12.7255 19.5407 12.2935 19.5407C11.8681 19.5407 11.5469 19.4255 11.3274 19.195C11.1082 18.9647 10.9995 18.6301 10.9995 18.187C10.9995 18.074 11.0107 17.9345 11.0329 17.7661C11.0549 17.5999 11.0971 17.3473 11.1591 17.0127L12.0941 12.3269L10.665 12.1054V11.4939L13.656 10.8337H14.4204L13.306 16.7181C13.2727 16.8997 13.2484 17.046 13.2328 17.1612C13.2173 17.2743 13.2106 17.3672 13.2106 17.4426C13.2106 17.7527 13.2838 17.9921 13.4321 18.1516C13.5785 18.3133 13.7911 18.3952 14.0703 18.3952C14.1944 18.3952 14.3583 18.3753 14.5644 18.3354C14.7682 18.2956 15.0031 18.2335 15.2689 18.1471L15.2689 18.8605Z" fill="#565859"/>
+                                </svg>
+                             <span class="ml-2" id="start_tour_button">Help</span>
+                         </li>
+                      </ul>
+
+
+            </div>
+            <!-- sidebar ends -->
+        </div>
+        
+        <div class="col-md-10">
+            <!-- main content starts -->
+
+            <div class="row">
+                <div class="col">
+
+                    <!-- tabs header starts -->
+                    <div class="row    mb-2 ml-1" style="top:50px; align-items: center;">
+  
+                        <div class="col">
+                            <span class="badge badge badge-secondary p-2 mr-2 header_tab_item custom_badge"
+                                id="fresh" onclick="handleTabClick('fresh')"> &#x1F49B; Fresh</span>
+                            <span class="badge badge badge-secondary p-2 mr-2 header_tab_item custom_badge"
+                                id="hot" onclick="handleTabClick('hot')"> &#x1F336; Hot</span>
+                            <span class="badge badge badge-secondary p-2 mr-2 header_tab_item custom_badge"
+                                id="trending" onclick="handleTabClick('trending')"> &#x1F525;  Trending</span>
+                            <span class="badge badge badge-secondary p-2 mr-2 header_tab_item custom_badge"
+                                id="sparks_choice" onclick="handleTabClick('sparks_choice')"> &#x26A1;  Spark Choice</span>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row" style="align-items: center;"> 
+                                <div class="col-6 p-1 mt-2  post_creation_container text-center" style="cursor: pointer;" onclick="showPostTypes();">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26" fill="none">
+                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M13.0003 23.8337C18.9834 23.8337 23.8337 18.9834 23.8337 13.0003C23.8337 7.01724 18.9834 2.16699 13.0003 2.16699C7.01724 2.16699 2.16699 7.01724 2.16699 13.0003C2.16699 18.9834 7.01724 23.8337 13.0003 23.8337ZM14.0837 14.0837V18.417H11.917V14.0837H7.58366V11.917H11.917V7.58366H14.0837V11.917H18.417V14.0837H14.0837Z" fill="#252627"/>
+                                    </svg>
+                                    <span>New Post</span>
+                                </div>
+                                <div class="col p-1 mt-2 mx-2">
+                                    <button type="button" class="btn btn-secondary notification_button_container" data-toggle="popover" data-trigger="click"
+                                    data-placement="bottom" id="notifications_button">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26" fill="none">
+                                        <path d="M11.3724 2.70898C11.3724 1.81152 12.0999 1.08398 12.9974 1.08398C13.8949 1.08398 14.6224 1.81152 14.6224 2.70898V3.95362C18.3645 4.70735 21.1826 8.01331 21.1826 11.9775V17.5251L22.2057 20.584H3.78906L4.81221 17.5251V11.9775C4.81221 8.01331 7.63029 4.70735 11.3724 3.95362V2.70898Z" fill="#252627"/>
+                                        <path d="M13.0018 24.9173C11.2842 24.9173 9.83329 23.7752 9.36719 22.209H16.6365C16.1704 23.7752 14.7195 24.9173 13.0018 24.9173Z" fill="#252627"/>
+                                    </svg>
+                                    </button>
+                              </div>
+                            </div>
+                        </div>
+    
+                    </div>
+                    <hr>
+                    <!-- tabs header ends -->
+    
+                    <!-- feed  starts -->
+                    <div class="row px-4">
+                        <div class="col-md-8 mb-2" id="posts_feed">
+                            <!-- posts here -->
+                        </div>
+                        <div class="col-md-4">
+                           <div class="row">
+                              <div class="d-lg-block d-none " id="post_details" style="width:100%;">
+                                  <!-- post details here -->
+                               </div>
+                            </div>
+                        </div>
+    
+                    </div>
+                    <!-- feed ends -->
+
+                   
+                </div>
+    
+               
+            </div>
+
+            <!-- main content ends -->
+
+        </div>
+
+       
+
+
+    </div>
+
+    <!-- bootom bar starts -->
+    <div class="d-lg-none d-md-block  fixed-bottom  p-3" style="background-color: #fff;color: black;">
+        <div class="row text-center">
+            <div class="col sidebar_tab_item" id="bottom_home" onclick="handleBootomBarClick('home')"><i
+                    class="material-icons ">
+                    home
+                </i><br>
+                All </div>
+
+            <div class="col sidebar_tab_item" id="bootom_video" onclick="handleBootomBarClick('video')"><i
+                    class="material-icons">videocam</i><br>
+                Video </div>
+
+            <div class="col sidebar_tab_item" id="bootom_blog" onclick="handleBootomBarClick('blog')"><i
+                    class="material-icons">newspaper</i><br>
+                Blog </div>
+
+            <div class="col sidebar_tab_item" id="bootom_image" onclick="handleBootomBarClick('image')"><i
+                    class="material-icons">photo</i><br>
+                Photo </div>
+        </div>
+    </div>
+    <!-- bootom bar ends -->
+
+</div>
+
+
+
+
+
+
+
+    <div id="postCreateModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+        aria-hidden="true" data-mdb-backdrop="true" data-mdb-keyboard="true" data-backdrop="static"
+        data-keyboard="false" style="position: fixed; top: 0; bottom: 0; left: 0; right: 0;">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content" style="height:100vh;">
+                <div class="modal-header">
+                    
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="float:left; margin:0; padding:0;">
+                    <span class="material-symbols-outlined" aria-hidden="true">
+                    keyboard_backspace
+                    </span>
+                    </button>
+                    <p>Create Your Post</p>
+                </div>
+                <div class="modal-body" id="postCreateForm" style="overflow-y: scroll; height: calc(100vh - 56px);">
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="postOptionsList" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="postOptionsList"
+    aria-hidden="true" data-mdb-backdrop="true" data-mdb-keyboard="true" data-backdrop="static"
+    data-keyboard="false" >
+
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header row mx-1" style="background: #fff;">
+                    <div class="col mx-2  font-weight-bold">New Post</div>
+                    <div>
+                        <button type="button col" class="close" data-dismiss="modal" aria-label="Close" style="float:right; margin:0; padding:0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 22C17.5229 22 22 17.5229 22 12C22 6.47715 17.5229 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5229 6.47715 22 12 22ZM10.5858 12L7.2929 15.2928L8.7071 16.7071L12 13.4142L15.2929 16.7071L16.7071 15.2928L13.4143 12L16.7071 8.70705L15.2929 7.29285L12 10.5857L8.7071 7.29285L7.2929 8.70705L10.5858 12Z" fill="#324558"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col m-2" style="border-radius: 15px; border: 0.5px solid rgba(0, 0, 0, 0.15); background: #E6EEFA; cursor:pointer;" id="create_blog_post" onclick="handlePostCreate('blog')">
+                            <div style="align-items: center;" class="p-2 m-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M30.933 22.6667C30.933 26.3486 27.9482 29.3333 24.2663 29.3333C20.5844 29.3333 17.5996 26.3486 17.5996 22.6667C17.5996 18.9848 20.5844 16 24.2663 16C27.9482 16 30.933 18.9848 30.933 22.6667ZM23.2663 19.3333V21.6667H20.933V23.6667H23.2663V26H25.2663V23.6667H27.5996V21.6667H25.2663V19.3333H23.2663Z" fill="#252627"/>
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M24.1603 13.7596C25.5754 13.7596 26.9125 14.0936 28.097 14.6871C27.4373 7.88031 21.7001 2.55957 14.7203 2.55957C7.29755 2.55957 1.28027 8.57685 1.28027 15.9996C1.28027 23.4223 7.29755 29.4396 14.7203 29.4396C15.9088 29.4396 17.0613 29.2853 18.1588 28.9957C16.4369 27.3893 15.3603 25.1002 15.3603 22.5596C15.3603 21.9655 15.4191 21.3852 15.5313 20.8242H8.87413C8.33032 20.8242 7.88949 20.353 7.88949 19.7719V11.0904C7.88949 10.6544 8.22011 10.3011 8.62795 10.3011C9.03583 10.3011 9.36642 10.6544 9.36642 11.0904V19.7719H10.1049V11.3534H16.2587C16.5306 11.3534 16.7511 11.589 16.7511 11.8796V17.8096C18.316 15.3735 21.0497 13.7596 24.1603 13.7596ZM11.5818 16.0888H15.2741V17.1411H11.5818V16.0888ZM15.2741 12.9319H11.5818V15.0365H15.2741V12.9319Z" fill="#252627"/>
+                                </svg>
+                                <br>
+                                <span class="font-weight-bold">Blog Post</span>
+                            </div>
+                        </div>
+                        <div class="col m-2" style="border-radius: 15px; border: 0.5px solid rgba(0, 0, 0, 0.15); background: #E6EEFA; cursor:pointer;" id="create_video_post" onclick="handlePostCreate('video')">
+                            <div style="align-items: center;" class="p-2 m-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M30.933 22.6667C30.933 26.3486 27.9482 29.3333 24.2663 29.3333C20.5844 29.3333 17.5996 26.3486 17.5996 22.6667C17.5996 18.9848 20.5844 16 24.2663 16C27.9482 16 30.933 18.9848 30.933 22.6667ZM23.2663 19.3333V21.6667H20.933V23.6667H23.2663V26H25.2663V23.6667H27.5996V21.6667H25.2663V19.3333H23.2663Z" fill="#252627"/>
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M28.0971 14.6871C26.9125 14.0936 25.5753 13.7596 24.1603 13.7596C22.4329 13.7596 20.8217 14.2573 19.4624 15.1172V13.105C19.4624 12.8751 19.2133 12.7315 19.0143 12.8467L17.0743 13.9698V17.3405C16.7288 17.8088 16.4287 18.3126 16.1802 18.8453V11.6919H6.62805C6.29832 11.6919 6.03106 11.9592 6.03106 12.2889V19.453C6.03106 19.7828 6.29832 20.0501 6.62805 20.0501H15.7233C15.4871 20.8453 15.3603 21.6876 15.3603 22.5596C15.3603 25.1002 16.4371 27.3896 18.159 28.9958C17.0615 29.2855 15.9087 29.4396 14.7203 29.4396C7.29746 29.4396 1.28027 23.4224 1.28027 15.9996C1.28027 8.57675 7.29746 2.55957 14.7203 2.55957C21.7003 2.55957 27.4375 7.88021 28.0971 14.6871ZM7.82207 13.4829H10.8072V14.6769H7.82207V13.4829Z" fill="#252627"/>
+                                </svg>
+                                <br>
+                                <span class="font-weight-bold">Video Post</span>
+                             </div>
+                         </div>
+                         <div class="col m-2" style="border-radius: 15px; border: 0.5px solid rgba(0, 0, 0, 0.15); background: #E6EEFA; cursor:pointer;" id="create_photo_post" onclick="handlePostCreate('photo')">
+                            <div style="align-items: center;" class="p-2 m-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="31" height="32" viewBox="0 0 31 32" fill="none">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M15.0199 29.4396C16.1797 29.4396 17.3052 29.2931 18.379 29.0177C16.7233 27.4282 15.6929 25.194 15.6929 22.7196H5.59768L10.3088 16.6716L13.6739 20.717L18.385 14.6556L19.1923 15.7304C20.6546 14.6335 22.4724 13.9836 24.4422 13.9836C25.8824 13.9836 27.2414 14.3311 28.4396 14.9466C27.9017 8.01608 22.099 2.55957 15.0199 2.55957C7.58597 2.55957 1.55957 8.57686 1.55957 15.9996C1.55957 23.4223 7.58597 29.4396 15.0199 29.4396ZM12.3279 11.2956C12.3279 12.409 11.4239 13.3116 10.3088 13.3116C9.19368 13.3116 8.28975 12.409 8.28975 11.2956C8.28975 10.1821 9.19368 9.27957 10.3088 9.27957C11.4239 9.27957 12.3279 10.1821 12.3279 11.2956Z" fill="#252627"/>
+                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M31.0003 22.6667C31.0003 26.3486 28.0156 29.3333 24.3337 29.3333C20.6518 29.3333 17.667 26.3486 17.667 22.6667C17.667 18.9848 20.6518 16 24.3337 16C28.0156 16 31.0003 18.9848 31.0003 22.6667ZM23.3337 19.3333V21.6667H21.0003V23.6667H23.3337V26H25.3337V23.6667H27.667V21.6667H25.3337V19.3333H23.3337Z" fill="#252627"/>
+                                </svg>
+                                <br>
+                                <span class="font-weight-bold">Photo Post</span>
+                            </div>
+                          </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+       const sparkLineHeaders = {
+        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+       }
+
+        const postTypes = ["fresh", "hot", "trending", "sparks_choice"];
+        const postCategories = ["home", "video", "blog", 'image'];
+        const defaultTabs = { post_type: "fresh", post_cateogry: "home" };
+
+
+        const handleTabColorChange = ({ tabId }) => {
+            const tabs = document.querySelectorAll('.header_tab_item');
+            const sidebarTabs = document.querySelectorAll('.sidebar_tab_item');
+            const isSidebar = postCategories.includes(tabId);
+            (isSidebar ? sidebarTabs : tabs).forEach(tab => {
+                if (tab.id === tabId) {
+                    tab.style.backgroundColor = isSidebar ? "#398CCB" : '#398CCB';
+               
+                     tab.style.color = '#fff';
+
+
+                } else {
+                    tab.style.backgroundColor = isSidebar ? '#fff' : '#fff';
+                    tab.style.color = 'black';
+
+                }
+            });
+        }
+
+        const startTour=()=>{
+
+            introJs().setOptions({
+                showProgress:true,
+                steps: [{
+                  intro: "Welcome to Spark TimeLine. Let me guide you through it."
+                }, {
+                  element: document.querySelector('#home'),
+                  intro: "This will show All types of content!"
+                },
+                {
+                    element:document.querySelector('#video'),
+                    intro:"This will show only Videos."
+                },
+                {
+                    element:document.querySelector('#create_image_post'),
+                    intro:"Create Posts by Uploading Photos.."
+                },
+                {
+                    element:document.querySelector('#fresh'),
+                    intro:"Click here to show freshly uploaded posts."
+                },
+                {
+                    element:document.querySelector('#sparks_choice'),
+                    intro:"This will show posts by Planet Spark Admin"
+                },
+                {
+                    element:document.querySelector('#notifications_button'),
+                    intro:"See All the notifications from here."
+                    
+                },
+                {
+                    element:document.querySelector('#post_details'),
+                    intro:"This will show summary of your posts  created so far."
+                },
+                {
+                    element:document.querySelectorAll('#reactions_row')[0],
+                    position:"bottom",
+                    intro:"Click on the emojis to react on the post."
+                },
+                {
+                    element:document.querySelectorAll('#view_comments_button')[0],
+                    position:"bottom",
+                    intro:"Click here to see the comments on the post and add your own."
+                }
+               
+                ]
+              }).start();
+        }
+
+        const fetchData = () => {
+            const queryData = JSON.parse(localStorage.getItem('tabs'));
+            const paginationData= JSON.parse(localStorage.getItem("currentTabParams"));
+
+            let fromPagination = false;
+            if(paginationData){
+                  if(queryData.post_type === paginationData.post_type && queryData.post_cateogry===paginationData.post_cateogry){
+                fromPagination = true;
+            }
+            }
+        
+            const feedLoading = '<%= j render "feed_loading" %>';
+            $('#posts_feed').html(feedLoading);
+            $.ajax({
+                    type: 'GET',
+                    url: '/timeline/posts',
+                    data: { ...queryData, page: fromPagination ? paginationData.page : 1},
+                    headers:sparkLineHeaders,
+                    success: function (data) {
+                        $('#posts_feed').html(data);
+                    }
+                });
+        }
+
+        const updatePageVisit=()=>{
+              $.ajax({
+                    type: 'POST',
+                    url: '/timeline/update_page_visit',
+                    headers:sparkLineHeaders,
+                    success: function (data) {
+                    }
+                });
+        }
+
+        const getNotifications = () => {
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    type: 'GET',
+                    url: '/timeline/get_user_notifications',
+                    headers: sparkLineHeaders,
+                    success: function (data) {
+                        resolve(data);
+                    },
+                    error: function (error) {
+                        reject(error);
+                    }
+                });
+            });
+        }
+        
+        $(window).on('load', function () {
+            setTimeout(function () {
+                $('body > div.profiler-results.profiler-left.profiler-top.profiler-no-controls').remove();
+        
+                $('[data-toggle="popover"]').popover({
+                    title: 'Notifications',
+                    content: function () {
+                        var $popover = $(this);
+                        return getNotifications().then(data => {
+                            $popover.attr('data-content', data);
+                            $popover.popover('hide').popover('show');
+                        }).catch(error => {
+                            console.error('Error fetching notifications:', error);
+                            return 'Error fetching notifications.';
+                        });
+                    },
+                    html: true,
+                    container: 'body',
+                });       
+            }, 2000);
+        });
+        
+        
+
+        $(document).ready(() => {
+            localStorage.setItem("tabs", JSON.stringify(defaultTabs));
+            fetchData();
+            handleTabColorChange({ tabId: defaultTabs.post_type });
+            handleTabColorChange({ tabId: defaultTabs.post_cateogry });
+            setTimeout(()=>{
+                const shownTour = localStorage.getItem("sparkline_tour_shown");
+                if(shownTour!=="yes"){
+                     startTour();
+                }
+                localStorage.setItem("sparkline_tour_shown","yes");
+            },2000)
+
+        })
+
+      
+
+        function handleTabClick(tabId) {
+                        const currentTabs = JSON.parse(localStorage.getItem("tabs"));
+
+            if (tabId) {
+                if (postCategories.includes(tabId) && currentTabs?.post_cateogry !== tabId) {
+                    localStorage.setItem("tabs", JSON.stringify({ ...currentTabs, post_cateogry: tabId }));
+                    fetchData();
+                }
+                if (postTypes.includes(tabId) && currentTabs?.post_type !== tabId) {
+                    localStorage.setItem("tabs", JSON.stringify({ ...currentTabs, post_type: tabId }));
+                    fetchData();
+                }
+                handleTabColorChange({ tabId });
+            }
+            
+
+        }
+
+        function handleBootomBarClick(tab) {
+            const currentTabs = JSON.parse(localStorage.getItem("tabs"));
+            if (tab) {
+                localStorage.setItem('tabs', JSON.stringify({ ...currentTabs, post_cateogry: tab }));
+                fetchData();
+            }
+        }
+
+        const handlePostCreate = (postType) => {
+            $('#postOptionsList').modal('hide');
+            $('#postCreateModal').modal('show');
+            const imageC = '<%= j render "post_create_image_modal" %>';
+            const videoC = '<%= j render "post_create_video_modal" %>';
+            const blogC = '<%= j render "post_create_blog_modal" %>';
+            const options = {
+                photo: imageC,
+                video: videoC,
+                blog: blogC
+            }
+
+            $('#postCreateForm').html(options[postType]);
+        }
+
+        const goToLms=()=>{
+            const baseUrl = window.location.protocol + "//" + window.location.host;
+            window.location.href=baseUrl;
+        }
+
+        $(document).on('click', function (e) {
+            $('[data-toggle="popover"]').each(function () {
+              if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                $(this).popover('hide');
+              }
+            });
+          });
+        function showPostTypes(){
+            $('#postOptionsList').modal('show');
+        }
+
+    </script>
+
+</body>
+
+</html>

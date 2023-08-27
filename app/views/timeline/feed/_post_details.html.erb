@@ -1,0 +1,192 @@
+<%
+reactionHtmlMapping = {
+    thumbs_up: "\u{1F44D}",
+    thumbs_down: "\u{1F44E}",
+    heart: "\u{2764}\u{FE0F}",
+    star_struck: "\u{1F929}",
+    rocket: "\u{1F680}"
+  }
+  # Define the comments
+positive_comments = [
+    "Great job! You're a natural on camera.",
+    "Your personality is fantastic on screen.",
+    "Your message is inspiring. Keep spreading positivity!",
+    "Impressive quality. You put in a lot of effort.",
+    "Your humor is great. I laughed a lot.",
+    "You're a talented storyteller. Engaging!",
+    "Your video is relatable. Thanks for sharing.",
+    "Your perspective is unique. Love it!",
+    "Your video motivated me. Thanks!",
+    "Keep it up! Excited for more."
+  ]
+  
+  improvement_comments = [
+    "Keep pushing yourself to do better!",
+    "You have a lot of potential. Keep going!",
+    "Your dedication is paying off. Strive for excellence!",
+    "You're on the right track. Keep improving!",
+    "Great work so far. Keep tweaking it!",
+    "Your voice deserves to be heard. Keep refining your skills!",
+    "Impressive willingness to learn. Excited for what's next!",
+    "You have natural talent. Keep working at it!",
+    "Your passion is contagious. Keep channeling that energy!"
+  ]
+  
+  
+  # Select 3 positive comments and 2 improvement comments randomly for the time interval
+  selected_positive_comments = positive_comments.sample(3)
+  selected_improvement_comments = improvement_comments.sample(2)
+  comment_options =selected_positive_comments+selected_improvement_comments
+  
+%>
+
+<style>
+    .custom_badge {
+        background-color: #fff;
+        color: black;
+        cursor: pointer;
+        border: 1px solid #F2AC41;
+        word-wrap: break-word;
+    }
+</style>
+
+
+<div class="card">
+    <div class="card-body" style="background-color: #fff;max-height: 350px; overflow-y: auto;">
+        <div class="row">
+            <div class="col-md-10">
+                <div class="row">
+                    <% @stats[:reactions].each do |key, value| %>
+                        <% if key.to_s !='thumbs_down' && value > 0%>
+                            <p class="col" style="font-size:14px">
+                                <%=reactionHtmlMapping[key] %>
+                                    <%=value %>
+                            </p>
+                        <% end %>
+                    <% end %>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="row">
+                    <span style="font-size:10px;">Posted on</span>
+                </div>
+                <div class="row">
+                <span style="font-size:10px;">
+                <% if @stats[:post_created_at].year < Date.today.year %>
+                <%=@stats[:post_created_at].strftime( '%b %d, %Y') %>
+                 <% else %>
+                  <%=@stats[:post_created_at].strftime( '%b %d') %>
+                  <% end %>
+                </span>
+                 </div>
+
+            </div>
+        </div>
+        <!-- comments header -->
+        <div class="row ml-1" style="color:black;font-weight:500;font-size: 14px;">
+            <div style="font-weight:bold;">
+                Comments <%=@stats[:comments].count%>
+            </div>
+        </div>
+
+
+        <!-- comments start here -->
+     <div class="container">
+       
+        <% @stats[:comments].each do |comment| %>
+            <div class="row mt-1" style="font-size: 12px;">
+            <div class="col-2">
+              <span class="material-symbols-outlined">
+                 account_circle
+              </span> 
+            </div>
+
+            <div class="col-8">
+               <div class="row"><span>@<%=comment[:user_name].split( " ").map {|x| x.downcase}.join( "_")%></span></div>
+               <div class="row"><span><%=comment[:comment]%></span></div>
+            </div>
+
+            <div class="col-2">
+               <div class="row">
+               <span>
+               <% if comment[:created_at].year < Date.today.year %>
+               <%=comment[:created_at].strftime( '%b %d, %Y') %>
+                <% else %>
+                 <%=comment[:created_at].strftime( '%b %d') %>
+                 <% end %>
+               </span>
+               
+            </div>
+        </div>
+
+    </div>
+    <hr>
+  <% end %>
+ </div>
+  <!-- comments end here -->
+
+    </div>
+    <div class="card-footer">
+        <span style="font-size:12px; font-weight:bold;">Click on the below comments to add</span>
+        <div class="row mt-1">
+            <% comment_options.each do |option|%>
+                <p onclick="addComment(event,<%=@stats[:post_id]%>,'<%= j(option.to_s) %>')" class="badge badge-pill badge-light pd-4 m-2 custom_badge" style="font-size:10px;">
+            <%= option %>
+            </p>
+            <% end %>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+
+<script>
+
+
+
+const fetchComments=(id)=>{
+  const postContentModal=document.getElementById('myModal');
+  let isOpen=false;
+  if (postContentModal) {
+      isOpen= postContentModal.classList.contains('show');
+  }
+
+  $.ajax({
+        type: 'GET',
+        url: '/timeline/get_post_stats?id='+id,
+        success: function(data) {
+          $(`#${isOpen ? 'comments_details' : `post_details_${id}` }`).html(data);
+        }
+  });
+}
+
+const hhhh = {
+  "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+ }
+
+
+  const addComment = async (event,postId, comment) => {
+    event.stopPropagation();
+    const dataToSend = { post_id: postId, comment: comment };
+    try {
+      const response = await fetch('/timeline/add_comment', {
+        method: 'POST',
+        headers: hhhh,
+        body: JSON.stringify(dataToSend)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        fetchComments(postId);
+      } else {
+        console.log(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+
+</script>

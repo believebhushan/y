@@ -1,0 +1,66 @@
+<%
+@admin_posts=SparkPost.sparks_choice_posts.where('created_at > ?',DateTime.now - 10.days);
+@category_map={
+    'Recording':'#Sparkx Recording',
+    'Blog':'#Sparkx Diary',
+    'Media':'Photo Upload'
+}
+@notifications=@admin_posts.map {|post| {title:post.try(:spark_post_content).try(:title),user_name: post.try(:user).try(:name),cateogry:@category_map[post.try(:spark_post_content).try(:content_type).try(:to_sym)]}}
+@notifications = notifications
+
+%>
+<style>
+  .notification-item{
+   
+  }
+</style>
+<%
+reaction_html = {
+  thumbs_up: "\u{1F44D}",
+  thumbs_down: "\u{1F44E}",
+  heart: "\u{2764}\u{FE0F}",
+  star_struck: "\u{1F929}",
+  rocket: "\u{1F680}"
+}
+%>
+
+
+<ul class="list-group ">
+  <% @notifications.sort_by{|x| x[:created_at]}.reverse.each do |notification|%>
+  <li class="my-2 p-1 alert alert-secondary bg-white"> 
+   <% if notification[:action_type] == "reaction"%>
+      <a class="link-warning" href = "<%='/timeline/profile/'+ notification[:user_uuid]%>"><%=notification[:user_name].try(:capitalize)%></a> reacted <%=reaction_html[notification[:reaction].to_sym]%> on your post. 
+   <% end %>
+    <% if notification[:action_type] == "comment"%>
+      <a class="link-warning" href = "<%='/timeline/profile/'+ notification[:user_uuid]%>"><%=notification[:user_name].try(:capitalize)%></a>  🗨️ commented on your post.
+     <span class="text-primary"> <%=notification[:comment]%> </span>
+    <% end %>
+
+    <% if notification[:action_type] == "follow"%>
+      <a class="link-warning" href = "<%='/timeline/profile/'+ notification[:user_uuid]%>"><%=notification[:user_name].try(:capitalize)%></a> started following you. 
+    <% end %>
+
+    <% if notification[:action_type] == "like"%>
+     <a class="link-warning" href = "<%='/timeline/profile/'+ notification[:user_uuid]%>"><%=notification[:user_name].try(:capitalize)%></a> liked your post. 
+    <% end %>
+    <br>
+    <span class="text-info"> ⏳- <%=time_ago_in_words(notification[:created_at])%> <span>
+    <br>
+    <% if notification[:action_type]!="follow"%>
+    <a class="link-info" href="<%='/timeline/post/'+ notification[:post_id].to_s%>">
+    View the Post ↗ 
+    </a>
+    <% end %>
+  </li>
+  <hr>
+  <% end %>
+
+  <%if !@notifications.present? %>
+      <p>No Notifications for now.</p>
+  <% end %>
+</ul>
+
+<script>
+  
+</script>
+

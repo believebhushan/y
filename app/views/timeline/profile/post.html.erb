@@ -1,0 +1,253 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+<link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script src='https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+    crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<% 
+post=@post
+is_recording = post.try(:content_type)=='Recording'
+is_media=post.try(:content_type)=='Media'
+is_blog=post.try(:content_type)=='Blog'
+post_title=post.try(:title)
+
+ %>
+ 
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .post_description_class {
+            cursor: pointer;
+        }
+        .post_description_class:hover {
+            background-color: #fff;
+        }
+        .reaction_item_modal {
+            font-size: 14px;
+            cursor:pointer;
+        }
+        .reaction_item_modal:hover {
+            animation-name: rotateAnimationModal;
+            animation-duration: 0.2s;
+            animation-timing-function: linear;
+            animation-iteration-count: 2;
+            
+        }
+
+          @keyframes rotateAnimationModal {
+            0% {
+              transform: rotate(0deg);
+            }
+            25% {
+              transform: rotate(-20deg);
+            }
+            50% {
+              transform: rotate(0deg);
+            }
+            75% {
+              transform: rotate(20deg);
+            }
+            100% {
+              transform: rotate(0deg);
+            }
+          }
+        .vplay {
+            width: 100%;
+            float: left;
+            border-radius: 10px;
+        }
+        .vinfo {
+            width: 100%;
+            float: right;
+            border-radius: 10px;
+        }
+        @keyframes slideAnimationModal{
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(300px);
+            }
+          }
+          
+          .slide_modal {
+            animation-name: slideAnimationModal;
+            animation-duration: 1s;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: 1;
+            float-right:
+          }
+        .selected_post {
+            border: 1px solid #5188C7;
+        }
+        .post_style {
+            border-radius: 25px;
+        }
+        .modal-backdrop {
+            opacity: 0.9 !important;
+        }
+        .customCommentBox{
+
+        }
+        .customCommentBox .card{
+            border:none !important;
+            padding: 3px;
+            margin-bottom: 5px;
+            background-color: #b9a6a6;
+            border-radius: 0.25rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+    </style>
+    
+      <div class="row m-2 p-2" style="align-items: center;">
+      <%
+      user = post.try(:user)
+      %>
+        <% if current_user.present? %>
+        <a class="col-1" href="<%='/timeline/profile/'+ user.user_name%>">
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26" fill="none">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M13.0003 23.8337C18.9834 23.8337 23.8337 18.9834 23.8337 13.0003C23.8337 7.01724 18.9834 2.16699 13.0003 2.16699C7.01724 2.16699 2.16699 7.01724 2.16699 13.0003C2.16699 18.9834 7.01724 23.8337 13.0003 23.8337ZM15.5613 9.11549L14.0292 7.58344L8.66699 12.9457L14.0294 18.3081L15.5614 16.776L11.7311 12.9457L15.5613 9.11549Z" fill="#324558"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M13.0003 23.8337C18.9834 23.8337 23.8337 18.9834 23.8337 13.0003C23.8337 7.01724 18.9834 2.16699 13.0003 2.16699C7.01724 2.16699 2.16699 7.01724 2.16699 13.0003C2.16699 18.9834 7.01724 23.8337 13.0003 23.8337ZM15.5613 9.11549L14.0292 7.58344L8.66699 12.9457L14.0294 18.3081L15.5614 16.776L11.7311 12.9457L15.5613 9.11549Z" fill="#090909"/>
+            </svg>
+            <span>Back</span>
+        </a>
+        <% end %>
+        <div class="col">
+        <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="100%" height="50px" viewBox="0 0 1957.000000 461.000000" preserveAspectRatio="xMidYMid meet"> <g transform="translate(0.000000,461.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none"> <path d="M1313 4116 c-103 -34 -176 -98 -222 -196 -35 -74 -36 -209 -3 -283 44 -98 155 -188 251 -203 23 -4 44 -11 47 -16 3 -5 21 -65 39 -133 l33 -125 -26 -6 c-68 -15 -231 -68 -272 -89 -118 -60 -210 -167 -252 -294 -22 -64 -22 -80 -25 -561 -2 -299 0 -501 6 -509 13 -19 177 -44 202 -31 17 10 18 40 21 503 4 542 4 541 69 620 60 73 239 132 539 179 128 19 183 22 465 22 282 0 337 -3 465 -22 300 -47 479 -106 539 -179 65 -79 65 -78 71 -623 l5 -495 94 2 c146 3 133 -52 129 533 -4 480 -4 497 -26 561 -42 127 -134 234 -251 294 -48 24 -234 85 -261 85 -41 1 -43 13 -15 116 43 162 44 164 70 164 96 0 234 109 275 216 18 49 21 74 18 149 -5 110 -31 167 -107 238 -76 72 -127 91 -236 92 -82 0 -96 -3 -157 -33 -74 -36 -132 -95 -169 -170 -20 -39 -24 -63 -24 -142 0 -81 4 -103 26 -150 14 -30 47 -76 73 -102 l47 -47 -37 -141 c-37 -139 -37 -141 -63 -136 -125 26 -591 35 -799 15 -64 -6 -128 -12 -141 -13 -22 -1 -26 7 -61 137 l-37 139 41 39 c111 102 143 276 76 414 -29 59 -101 129 -167 161 -67 33 -183 42 -250 20z m153 -232 c42 -20 64 -59 64 -115 0 -33 -6 -47 -34 -75 -29 -29 -41 -34 -79 -34 -130 0 -171 174 -54 225 42 19 62 18 103 -1z m1534 1 c115 -59 78 -225 -50 -225 -63 0 -120 56 -120 120 0 54 65 120 118 120 13 0 36 -7 52 -15z"/> <path d="M10219 2900 c-225 -36 -363 -166 -432 -407 -21 -76 -22 -92 -22 -583 0 -443 2 -514 17 -579 50 -212 168 -337 357 -377 89 -18 281 -18 355 1 189 49 307 180 350 388 9 42 16 103 16 137 l0 60 -189 0 -188 0 -5 -79 c-8 -138 -55 -196 -161 -196 -77 0 -120 27 -150 94 -18 39 -22 70 -25 214 l-4 167 367 0 367 0 -4 348 c-5 380 -11 425 -74 559 -33 71 -130 170 -197 202 -99 48 -260 70 -378 51z m174 -334 c40 -17 70 -50 87 -96 8 -22 15 -109 18 -232 l4 -198 -182 0 -182 0 4 193 c5 195 12 234 49 288 38 54 132 75 202 45z"/> <path d="M12565 2900 c-205 -41 -369 -192 -420 -385 -21 -83 -20 -219 4 -294 50 -160 171 -271 477 -438 224 -122 294 -197 294 -319 0 -83 -34 -151 -92 -185 -36 -20 -57 -24 -123 -24 -67 0 -87 4 -125 25 -60 33 -97 106 -106 208 l-7 72 -178 0 -179 0 0 -97 c0 -161 35 -255 133 -359 70 -76 181 -136 292 -159 91 -19 262 -19 344 0 143 34 273 126 353 249 99 153 113 378 34 534 -55 108 -188 224 -376 328 -306 168 -370 228 -370 347 0 81 45 151 113 176 66 25 181 7 231 -37 35 -31 66 -113 66 -174 l0 -58 180 0 180 0 0 83 c0 243 -157 438 -405 502 -63 16 -249 19 -320 5z"/> <path d="M7365 2881 c-194 -47 -310 -165 -350 -356 -8 -38 -15 -94 -15 -122 l0 -53 190 0 190 0 0 58 c0 67 25 129 65 160 22 17 41 22 92 22 131 0 156 -39 161 -246 l4 -141 -114 -6 c-354 -21 -570 -179 -633 -462 -22 -97 -17 -349 9 -440 72 -258 246 -388 476 -355 100 14 169 50 229 117 l50 56 38 -77 37 -76 143 0 143 0 0 793 c0 873 2 850 -62 949 -57 90 -141 144 -276 179 -98 25 -277 25 -377 0z m342 -1158 c-6 -194 -20 -281 -56 -351 -59 -114 -185 -142 -259 -58 -56 64 -75 135 -76 276 -1 86 3 136 13 160 46 113 128 157 300 159 l84 1 -6 -187z"/> <path d="M15445 2889 c-284 -38 -431 -196 -458 -491 l-6 -58 189 0 188 0 6 28 c3 15 8 46 11 69 15 96 96 158 197 150 71 -6 114 -31 141 -82 18 -34 22 -61 25 -176 l4 -136 -149 -6 c-238 -9 -373 -58 -500 -183 -131 -128 -178 -269 -170 -504 6 -152 21 -221 73 -327 72 -149 191 -231 349 -241 99 -6 190 10 260 45 58 28 86 53 126 107 l29 39 37 -81 36 -82 149 0 148 0 0 748 c0 613 -3 759 -15 815 -40 188 -150 302 -337 351 -75 19 -245 27 -333 15z m305 -1107 c0 -349 -79 -522 -240 -522 -129 0 -205 112 -205 300 1 114 20 179 71 239 63 73 136 99 277 100 l97 1 0 -118z"/> <path d="M4680 1915 l0 -955 190 0 190 0 0 270 0 270 135 0 c159 0 261 18 355 62 121 58 210 175 247 325 25 100 25 500 0 593 -39 147 -123 263 -234 323 -111 60 -171 67 -545 67 l-338 0 0 -955z m640 633 c49 -25 84 -70 100 -127 14 -50 13 -421 -1 -478 -15 -58 -70 -117 -124 -132 -22 -6 -84 -11 -137 -11 l-98 0 0 385 0 385 108 0 c92 0 114 -3 152 -22z"/> <path d="M5990 1915 l0 -955 400 0 400 0 0 165 0 165 -210 0 -210 0 0 790 0 790 -190 0 -190 0 0 -955z"/> <path d="M8390 1915 l0 -955 190 0 190 0 0 253 c0 262 -15 764 -26 900 -6 73 -5 79 12 75 13 -2 21 -17 27 -48 49 -259 211 -957 262 -1127 l16 -53 229 0 230 0 0 955 0 955 -190 0 -190 0 0 -242 c0 -231 11 -575 26 -810 6 -92 5 -108 -8 -108 -11 0 -23 38 -48 153 -40 187 -156 650 -213 852 l-42 150 -233 3 -232 2 0 -955z"/> <path d="M10990 2705 l0 -165 135 0 135 0 0 -790 0 -790 190 0 190 0 0 790 0 790 135 0 135 0 0 165 0 165 -460 0 -460 0 0 -165z"/> <path d="M13600 1916 l0 -956 190 0 190 0 0 270 0 270 178 0 c199 0 266 11 364 61 117 59 195 162 235 309 15 54 18 106 18 310 0 266 -7 317 -62 429 -33 69 -125 161 -195 195 -116 57 -133 59 -540 63 l-378 5 0 -956z m692 621 c36 -21 53 -40 74 -83 26 -53 28 -67 32 -218 5 -180 -8 -292 -39 -346 -43 -72 -89 -88 -251 -89 l-128 -1 0 386 0 386 133 -4 c123 -3 136 -5 179 -31z"/> <path d="M16450 1916 l0 -956 190 0 190 0 0 270 0 270 94 0 c63 0 97 -4 103 -12 6 -7 56 -129 112 -270 l103 -258 193 0 194 0 -39 92 c-21 51 -75 178 -119 282 -45 104 -81 194 -81 200 0 6 20 22 45 35 103 54 188 172 222 307 14 56 17 114 17 304 0 264 -9 326 -67 433 -59 111 -149 184 -282 228 -67 22 -85 23 -472 27 l-403 4 0 -956z m725 632 c45 -24 82 -68 100 -117 12 -34 15 -89 15 -245 0 -226 -10 -283 -57 -328 -52 -49 -89 -58 -253 -58 l-150 0 0 386 0 386 158 -4 c120 -3 164 -8 187 -20z"/> <path d="M17930 1915 l0 -955 190 0 190 0 0 400 0 400 103 0 102 0 214 -400 213 -400 210 0 210 0 -20 33 c-37 60 -522 917 -522 921 0 3 507 898 537 949 2 4 -90 7 -205 7 l-209 0 -215 -402 -216 -403 -98 0 -99 0 -3 403 -2 402 -190 0 -190 0 0 -955z"/> <path d="M1710 2488 c-41 -28 -76 -77 -90 -127 -30 -103 -30 -340 1 -431 16 -47 54 -97 93 -121 44 -28 158 -23 203 9 71 50 112 216 99 395 -10 125 -36 203 -86 252 -39 38 -44 40 -113 43 -63 3 -77 1 -107 -20z"/> <path d="M2490 2503 c-40 -15 -91 -80 -110 -140 -42 -136 -35 -365 15 -468 36 -74 74 -99 160 -103 56 -2 76 1 101 17 39 24 77 74 93 121 31 91 31 328 1 431 -14 50 -49 99 -89 126 -27 18 -47 23 -95 22 -34 0 -68 -3 -76 -6z"/> <path d="M884 1249 c20 -190 114 -337 263 -416 117 -63 391 -130 632 -156 l115 -12 112 -194 c170 -295 177 -295 351 7 l108 188 125 12 c143 14 366 58 490 97 252 80 380 228 406 474 7 64 7 64 -17 58 -13 -3 -60 -9 -104 -13 -100 -8 -115 -16 -115 -57 0 -80 -76 -179 -169 -219 -69 -30 -259 -75 -416 -100 -124 -20 -178 -22 -480 -22 -302 0 -356 2 -480 22 -157 25 -347 70 -416 100 -93 40 -169 139 -169 220 0 40 -15 47 -129 56 -46 4 -90 10 -99 13 -13 5 -14 -3 -8 -58z"/> </g> </svg>
+        </div>
+        <% if !current_user.present? %>
+        <div class="col">
+            <div class="row">
+                <div class="mx-2 mt-2">
+                  <div class="btn" style="background: #019DD7;">
+                    <a  class="text-white" href="/account/sign_in?type=Student">Login</>
+                  </div>
+                </div>
+                <div class="mt-2">
+                <div class="btn" style="background: gray;">
+                  <a  class="text-white" href="/parents/c/start_v6?source=website&source_info=website_cta">Sign Up<a/>
+                </div>
+                </div>
+            </div>
+        </div>
+        <% end %>
+      </div>
+      <hr>
+    <div class="container mt-4">
+
+    <div class="card  post_style rounded" id="post_<%=post.id.to_s%>" style="font-size:12px;">
+        <div class="card-body" id=<%=Time.now.to_i*1000%> style="background-color: #fff">
+            <div class="row mx-auto">
+            <span class="col-md-6">
+             <img style="border:1px solid yellow; border-radius: 50%; width: 50px; height: 50px;">  
+             <a style="color:black;font-weight:bold;" class="mt-2"  href="<%='/timeline/profile/'+ user.user_name%>" >@<%=user.try(:name).split(" ").map{|x| x.downcase}.join("_")%>
+             </a>
+             <br>
+             <span><%= user.name%></span>
+            </span>
+            </div>
+            <div class="row mx-auto">
+          
+            <span class="m-1" style="color:#5188C7"># <%=post.content_type%></span>
+            <% (post.try(:tags) || []).each do |tag| %>
+                <span class="m-1" style="color:#5188C7"># <%=tag%></span>
+            <% end %>
+
+            </div>
+
+            <div class="row mx-auto">
+                <p class="text-left font-weight-bold"><%=post_title%></p>
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-10">
+                   <%if is_recording%>
+                       <div class="vplay p-2 ">
+                          <div class="embed-responsive embed-responsive-16by9">
+                           <video class="embed-responsive-item p-1 rounded" src=<%=post.try(:pseudonym).get_url[:link]%> allowfullscreen controls></video>
+                           </div>
+                        </div>
+                       
+                   <%end%>
+
+                 <% if is_media %>
+                      <% if ["video/mp4","video/mpeg", "video/quicktime"].include?(post.try(:file).try(:content_type))%>
+                       <div class="vplay p-2 " >
+                         <div class="embed-responsive embed-responsive-16by9">
+                           <video class="embed-responsive-item p-1 rounded" src=<%=post.try(:file).try(:url)%> allowfullscreen controls></video>
+                          </div>
+                      </div>
+                   <% else %>
+                      <div style="text-align: center;">
+                        <img style="max-width: 100%; max-height: 300px; width: auto; height: auto;" src=<%= post.try(:user_type)=='admin' ? post.try(:file).try(:url): post.try(:url)%>>
+                      </div>
+                   <% end %>
+                 <% end %>
+
+                 <%if is_blog %>
+                      <div style="width:100%; overflow-x:hidden;">
+                              <%= raw post.try(:pseudonym).try(:content)%>
+                       </div>               
+                 <%end%>
+                    
+                </div>
+                <div class="col-md-2">
+
+                </div>
+
+            </div>
+
+            <div class="vinfo" style="font-size: 12px;">
+                <div class="row mx-auto">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-4 mt-4">
+                    <% if @is_creator %>
+                    <div class="row">
+                        <p class="col m-0 p-0 reaction_item_modal" onclick="makeReaction(event,<%= post.id %>, 'thumbs_up')" id="thumbs_up">&#x1f44d;</p>
+                        <p class="col m-0 p-0 reaction_item_modal" onclick="makeReaction(event,<%= post.id %>, 'thumbs_down')">&#x1F44E;</p>
+                        <p class="col m-0 p-0 reaction_item_modal" onclick="makeReaction(event,<%= post.id %>, 'star_struck')">&#x1f929;</p>
+                        <p class="col m-0 p-0 reaction_item_modal" onclick="makeReaction(event,<%= post.id %>, 'heart')">&#x2764;&#xfe0f;</p>
+                        <p class="col m-0 p-0 reaction_item_modal" onclick="makeReaction(event,<%= post.id %>, 'rocket')">&#x1F680;</p>
+                    </div>
+                    <% else %>
+                    <div class="row">
+                       <p class="col m-0 p-0 reaction_item_modal" onclick="openotSignedIn();" id="thumbs_up">&#x1f44d;</p>
+                       <p class="col m-0 p-0 reaction_item_modal" onclick="openotSignedIn();">&#x1F44E;</p>
+                       <p class="col m-0 p-0 reaction_item_modal" onclick="openotSignedIn();">&#x1f929;</p>
+                       <p class="col m-0 p-0 reaction_item_modal" onclick="openotSignedIn();">&#x2764;&#xfe0f;</p>
+                       <p class="col m-0 p-0 reaction_item_modal" onclick="openotSignedIn();">&#x1F680;</p>
+                    </div>
+                    <% end %>
+                    
+                </div>
+                <div class="col-md-6"></div>
+            </div>
+        </div>
+
+        <div id=<%=post.id.to_s+ "animate_modal"%> style="height:50px;"></div>
+
+    </div>
+
+    <div class="row mx-1 mt-3 customCommentBox" id="post_comments_details">
+        
+    </div>
+    </div>
+
+
+    <%= render partial: "post_scripts", locals: { post: post } %>
