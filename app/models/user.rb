@@ -31,5 +31,8 @@ class User < ApplicationRecord
       random_string = SecureRandom.hex(4) # 4 bytes = 8 hex digits
       self.user_name = random_string
     end
+    if name == nil
+      self.name = email
+    end
   end
 end
