@@ -153,7 +153,7 @@ module Timeline
           content_file = File.new(post_image)
           require 'uri'
           require 'net/http'
-          file_name ="#{Time.now.to_i}#{params[:post_image].original_filename}"
+          file_name ="#{Time.now.to_i}#{random_string = SecureRandom.hex(4)}"
           file_url = "https://sg.storage.bunnycdn.com/posttree/posts/#{file_name}"
           uploaded_url = "https://plant.b-cdn.net/posts/#{file_name}"
           
