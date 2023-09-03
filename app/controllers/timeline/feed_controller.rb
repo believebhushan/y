@@ -121,7 +121,6 @@ module Timeline
       def add_comment
         post_id=params[:post_id]
         comment=params[:comment]
-        byebug
         @post=Post.find(post_id)
         @comments=@post.comments.where(user:current_user,comment:comment)
         if @comments.present?

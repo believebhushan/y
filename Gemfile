@@ -75,4 +75,5 @@ gem 'devise'
 gem 'acts_as_votable'
 gem 'kaminari'
 gem 'byebug'
+gem 'dotenv-rails'
 

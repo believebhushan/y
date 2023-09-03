@@ -9,6 +9,10 @@ Bundler.require(*Rails.groups)
 module Y
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
+    config.before_configuration do
+      Dotenv.load Rails.root.join(".env")
+    end
+    
     config.load_defaults 7.0
 
     # Configuration for the application, engines, and railties goes here.

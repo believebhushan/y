@@ -1,0 +1,10 @@
+{
+    "apps": [
+      {
+        "name": "y",
+        "script": "bin/render-build.sh",
+        "exec_mode": "fork"
+      }
+    ]
+  }
+  
